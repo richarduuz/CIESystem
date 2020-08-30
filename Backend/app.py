@@ -4,6 +4,8 @@ from Backend.CouchDB import auth_user as auth
 from Backend.CouchDB import create_account as create
 from Backend.CouchDB import auth_user_by_id as auth_id
 from Backend.CouchDB import reset_password as reset_PSW
+from Backend.CouchDB import reset_other_password as reset_OPSW
+from Backend.CouchDB import delete_account as delete_a
 import json
 
 
@@ -66,10 +68,11 @@ def sign_up():
         createPassword = data['password']
         createTitle = data['title']
         staffDB = handler.Server['staff']
-        if create(staffDB, createUseranme, createPassword, createTitle):
+        result =  create(staffDB, createUseranme, createPassword, createTitle)
+        if result['result']:
             return jsonify({'result': 'Okay'})
         else:
-            return jsonify({"result": 'Create failed'})
+            return jsonify({"result": 'Create failed', 'reason': result['reason']})
     except:
         bad_request("data cannot be read")
 
@@ -102,6 +105,37 @@ def reset_password():
             return jsonify({'result': 'fail to reset'})
     except:
         bad_request("fail to reset")
+
+@app.route('/resetOtherPSW', methods=['POST'])
+def reset_other_password():
+    try:
+        rawData = request.data.decode('utf-8')
+        data = json.loads(rawData)
+        username = data['username']
+        password = data['password']
+        staffDB = handler.Server['staff']
+        if reset_OPSW(staffDB, username, password):
+            return jsonify({"result": "Okay"})
+        else:
+            return jsonify({"result": "fail to reset"})
+    except:
+        bad_request("fail to reset")
+
+@app.route('/deleteAccount', methods=['POST'])
+def delete_account():
+    try:
+        rawData = request.data.decode('utf-8')
+        data = json.loads(rawData)
+        username = data['username']
+        staffDB = handler.Server['staff']
+        result = delete_a(staffDB, username)
+        if result['result']:
+            return jsonify({"result": "Okay"})
+        else:
+            return jsonify({'result': 'failed to delete', 'reason': result['reason']})
+    except:
+        bad_request("fail to delete")
+
 
 if __name__ == '__main__':
     app.run(host='127.0.0.1' ,port="4000")

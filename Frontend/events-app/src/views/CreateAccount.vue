@@ -41,7 +41,7 @@
         },
         methods: {
             showForm(){
-                this.isShowForm = true
+                this.isShowForm = ! this.isShowForm
             },
             createAccount(){
                 //TODO http request create account
@@ -53,9 +53,9 @@
                         if(data){
                             let result = data['result'];
                             if (result === 'Okay'){
-                                console.log('create successfully')
+                                alert('create successfully')
                             } else {
-                                console.log('fail to create');
+                                alert('fail to create\n' + data['reason']);
                             }
                         }
                     })

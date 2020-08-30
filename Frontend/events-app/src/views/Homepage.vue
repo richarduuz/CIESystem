@@ -4,21 +4,27 @@
         <h2>{{userId}}</h2>
         <h2>{{username}}</h2>
         <br>
-        <create-account v-if="userTitle=='admin'"></create-account>
+        <create-account v-if="userTitle === 'admin'"></create-account>
         <br>
-        <reset-psw :username="username" :userId="userId"></reset-psw>
+        <reset-other-psw v-if="userTitle === 'admin'"></reset-other-psw>
+        <br>
+        <delete-account v-if="userTitle === 'admin'"></delete-account>
+        <br>
+        <button @click="showForm">I want to reset my password</button>
+        <reset-psw v-show="isShowForm" :username="username" :userId="userId"></reset-psw>
     </div>
 </template>
 
 <script>
     import CreateAccount from '../views/CreateAccount'
     import ResetPsw from '../views/ResetPsw'
+    import ResetOtherPsw from '../views/ResetOtherPsw'
+    import DeleteAccount from '../views/DeleteAccount'
     export default {
         name: "Homepage",
         data() {
             return {
-                isShowForm: false,
-                isShow: false,
+                isShowForm: false
             }
         },
         computed: {
@@ -32,10 +38,16 @@
                 return this.$route.query['userTitle']
             }
         },
-        methods: {},
+        methods: {
+            showForm(){
+                this.isShowForm = ! this.isShowForm
+            }
+        },
         components: {
             CreateAccount,
-            ResetPsw
+            ResetPsw,
+            ResetOtherPsw,
+            DeleteAccount
         }
     }
 </script>
