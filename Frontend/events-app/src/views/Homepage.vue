@@ -1,5 +1,8 @@
 <template>
-    <div>
+    <div v-if="typeof(userId) === 'undefined'">
+        <h2>Please Login first</h2>
+    </div>
+    <div v-else>
         <h2>This is the homepage</h2>
         <h2>{{userId}}</h2>
         <h2>{{username}}</h2>
