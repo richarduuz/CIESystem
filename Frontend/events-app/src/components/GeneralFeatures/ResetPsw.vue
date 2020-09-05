@@ -42,7 +42,10 @@
             .then(data => {
               if (data){
                 let result = data['result'];
-                if (result === 'Okay'){ alert('reset finished') }
+                if (result === 'Okay'){
+                  alert('reset finished');
+                  confirm("Go back to login?")? this.$router.replace('/login') : {}
+                }
                 else { alert('reset failed')}
               }
             })

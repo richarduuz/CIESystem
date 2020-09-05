@@ -63,16 +63,20 @@
 <style scoped>
     .userFeatures{
         text-align: left;
-    }.userFormFeatures{
+    }
+
+    div.userFormFeatures{
         text-align: left;
     }
-    ul {
+
+    ul{
         list-style-type: none;
         margin: 0;
         padding: 0;
         width: 200px;
         background-color: #f1f1f1;
     }
+
     li a {
         display: block;
         color: #000;
@@ -83,6 +87,4 @@
         background-color: #555;
         color: white;
     }
-
-
 </style>
