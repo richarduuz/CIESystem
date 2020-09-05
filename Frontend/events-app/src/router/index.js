@@ -5,6 +5,8 @@ const Home = () => import('../views/Home');
 const About = () => import('../views/About');
 const Login = () => import('../views/Login');
 const HomePage = () => import('../views/Homepage');
+const FormHistory = () => import('../components/FormFeatures/FormHistory');
+const CreateForm = () => import('../components/FormFeatures/CreateForm');
 
 Vue.use(VueRouter);
 
@@ -32,18 +34,20 @@ Vue.use(VueRouter);
       component: Login
   },
   {
-      path: '/HomePage/:username',
+      path: '/homepage/:username',
       name: 'HomePage',
       component: HomePage,
       children: [
-          {
-              path: 'Enquiry',
-              name: 'Enquiry'
-          },
-          {
-              path: 'RFQ',
-              name: 'RFQ'
-          }
+        {
+          path: 'form_history',
+          name: 'Form_History',
+          component: FormHistory
+        },
+        {
+          path: 'create_form',
+          name: 'Create_Form',
+          component: CreateForm
+        }
       ]
   }
 ];

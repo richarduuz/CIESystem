@@ -14,6 +14,18 @@
             <button @click="showForm">I want to reset my password</button>
             <reset-psw v-show="isShowForm"></reset-psw>
         </div>
+        <br>
+        <div class="userFormFeatures">
+            <ul>
+                <li>
+                    <router-link :to="'/homepage/' + $store.state.username + '/form_history'">My Form History</router-link>
+                </li>
+                <li>
+                    <router-link :to="'/homepage/' + $store.state.username + '/create_form'">Create A New Form</router-link>
+                </li>
+            </ul>
+        </div>
+        <router-view/>
     </div>
 </template>
 
@@ -34,6 +46,9 @@
         methods: {
             showForm(){
                 this.isShowForm = ! this.isShowForm
+            },
+            showSubMyForms(){
+
             }
         },
         components: {
@@ -46,9 +61,28 @@
 </script>
 
 <style scoped>
-.userFeatures{
-    text-align: left;
-}
+    .userFeatures{
+        text-align: left;
+    }.userFormFeatures{
+        text-align: left;
+    }
+    ul {
+        list-style-type: none;
+        margin: 0;
+        padding: 0;
+        width: 200px;
+        background-color: #f1f1f1;
+    }
+    li a {
+        display: block;
+        color: #000;
+        padding: 8px 16px;
+        text-decoration: none;
+    }
+    li a:hover {
+        background-color: #555;
+        color: white;
+    }
 
 
 </style>
