@@ -32,7 +32,7 @@ Vue.use(VueRouter);
       component: Login
   },
   {
-      path: '/HomePage',
+      path: '/HomePage/:username',
       name: 'HomePage',
       component: HomePage,
       children: [

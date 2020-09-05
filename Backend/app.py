@@ -48,7 +48,7 @@ def auth_user():
         staffDB = handler.Server['staff']
         result = auth(staffDB, loginUsername, loginPassword)
         if result['auth_result']:
-            return jsonify({'result': 'Okay', 'user': loginUsername, "userid": result['userid'], 'userTitle': result['title']})
+            return jsonify({'result': 'Okay', 'username': loginUsername, "userid": result['userid'], 'userTitle': result['title']})
         else:
             return jsonify({'result': 'False'})
 

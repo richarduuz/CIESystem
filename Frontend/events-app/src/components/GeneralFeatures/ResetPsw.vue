@@ -31,14 +31,11 @@
         }
       },
       props: {
-        username: String,
-        userId: String
       },
       methods: {
         resetPassword(){
           //TODO change password
-          let postData = {'userId': this.userId, 'password': this.newPassword};
-          console.log('here',postData);
+          let postData = {'userId': this.$store.state.userId, 'password': this.newPassword};
           postData = JSON.stringify(postData);
           this.$http.post('http://127.0.0.1:4000/resetPSW', postData, {emulateJSON: true})
             .then(response => response.json())
@@ -51,8 +48,7 @@
             })
         },
         checkPassword(){
-          console.log(this.userId);
-          let postData = {'userId': this.userId, 'password': this.formerPassword};
+          let postData = {'userId': this.$store.state.userId, 'password': this.formerPassword};
           postData = JSON.stringify(postData);
           this.$http.post('http://127.0.0.1:4000/authPSW',postData, {emulateJSON: true})
             .then(response => response.json())

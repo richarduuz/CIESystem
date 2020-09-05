@@ -1,28 +1,27 @@
 <template>
-    <div v-if="typeof(userId) === 'undefined'">
+    <div v-if="$store.state.userId.length === 0">
         <h2>Please Login first</h2>
     </div>
     <div v-else>
         <h2>This is the homepage</h2>
-        <h2>{{userId}}</h2>
-        <h2>{{username}}</h2>
+        <h2>{{$store.state.userId}}</h2>
+        <h2>{{$store.state.username}}</h2>
         <br>
-        <create-account v-if="userTitle === 'admin'"></create-account>
-        <br>
-        <reset-other-psw v-if="userTitle === 'admin'"></reset-other-psw>
-        <br>
-        <delete-account v-if="userTitle === 'admin'"></delete-account>
-        <br>
-        <button @click="showForm">I want to reset my password</button>
-        <reset-psw v-show="isShowForm" :username="username" :userId="userId"></reset-psw>
+        <div class="userFeatures">
+            <create-account v-if="$store.state.userTitle === 'admin'"></create-account>
+            <reset-other-psw v-if="$store.state.userTitle === 'admin'"></reset-other-psw>
+            <delete-account v-if="$store.state.userTitle === 'admin'"></delete-account>
+            <button @click="showForm">I want to reset my password</button>
+            <reset-psw v-show="isShowForm"></reset-psw>
+        </div>
     </div>
 </template>
 
 <script>
-    import CreateAccount from '../views/CreateAccount'
-    import ResetPsw from '../views/ResetPsw'
-    import ResetOtherPsw from '../views/ResetOtherPsw'
-    import DeleteAccount from '../views/DeleteAccount'
+    import CreateAccount from '../components/GeneralFeatures/CreateAccount'
+    import ResetPsw from '../components/GeneralFeatures/ResetPsw'
+    import ResetOtherPsw from '../components/GeneralFeatures/ResetOtherPsw'
+    import DeleteAccount from '../components/GeneralFeatures/DeleteAccount'
     export default {
         name: "Homepage",
         data() {
@@ -31,15 +30,6 @@
             }
         },
         computed: {
-            userId() {
-                return this.$route.query['userId']
-            },
-            username() {
-                return this.$route.query['username']
-            },
-            userTitle() {
-                return this.$route.query['userTitle']
-            }
         },
         methods: {
             showForm(){
@@ -56,5 +46,9 @@
 </script>
 
 <style scoped>
+.userFeatures{
+    text-align: left;
+}
+
 
 </style>

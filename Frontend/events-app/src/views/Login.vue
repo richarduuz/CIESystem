@@ -39,11 +39,12 @@
                         if (data){
                             var result = data['result'];
                             console.log(result);
-                            if (result === 'Okay'){
-                                this.userId = data['userid'];
-                                this.userTitle = data['userTitle']
+                            if (result === 'Okay') {
                                 console.log('go to homepage');
                                 console.log('user is',this.username, this.userId);
+                                this.$store.commit('setUserId', data['userid']);
+                                this.$store.commit('setUsername', data['username']);
+                                this.$store.commit('setUserTitle', data['userTitle']);
                                 this.toHomepage();
                             }
                             else if (result === 'False'){
@@ -56,13 +57,9 @@
                     })
             },
             toHomepage(){
+                let path = '/homepage/' + this.$store.state.username;
                 this.$router.push({
-                    path: '/homepage',
-                    query: {
-                        username: this.username,
-                        userId: this.userId,
-                        userTitle: this.userTitle
-                    }
+                    path
                 })
             }
         },
