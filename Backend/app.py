@@ -7,6 +7,8 @@ from Backend.CouchDB import reset_password as reset_PSW
 from Backend.CouchDB import reset_other_password as reset_OPSW
 from Backend.CouchDB import delete_account as delete_a
 import json
+import pandas
+import Backend.util as util
 
 
 url = "127.0.0.1"
@@ -136,6 +138,25 @@ def delete_account():
     except:
         bad_request("fail to delete")
 
+@app.route('/extractQuotation', methods=['POST'])
+def extractQuo():
+    try:
+        print('in the extraction')
+        file = request.files
+        filename = ""
+        for i in file:
+            filename = i
+            break
+        file = file.get(filename)
+        df = pandas.read_excel(file, sheet_name="Sheet1")
+        result = util.extractQuo(df)
+        return jsonify(result)
+    except:
+        bad_request("error")
+
+
+
 
 if __name__ == '__main__':
     app.run(host='127.0.0.1' ,port="4000")
+

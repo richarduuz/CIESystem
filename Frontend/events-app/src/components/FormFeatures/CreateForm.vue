@@ -27,6 +27,9 @@
         <th>采购</th>
         <th>目前状态</th>
       </tr>
+      <tr v-for="(entry, index) in entries" :key="index">
+        <th v-for="(value, key) in entry" :key="key">{{value}}</th>
+      </tr>
 
     </table>
     <input type="file" ref="file" id="file" @change="handleFileUpload">
@@ -39,12 +42,21 @@
     name: "CreateForm",
     data() {
       return {
-        file: undefined
+        file: undefined,
+        entries: []
       }
     },
     methods: {
-      submitForm(){
-        
+      submitForm() {
+        let form = new FormData();
+        form.append('Quotation', this.file);
+        this.$http.post('http://127.0.0.1:4000/extractQuotation', form, {headers: {'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'}})
+          .then(response => response.json())
+          .then(data => {
+            for(let item of data) {
+              this.entries.push(item);
+            }
+          })
       },
       handleFileUpload(){
         this.file = this.$refs.file.files[0];
