@@ -1,7 +1,6 @@
 <template>
   <div>
-    <button @click="showForm">I want to delete an account</button>
-    <div v-show="isShowForm">
+    <div>
       <label><b>Input the username</b></label>
       <input type="text" placeholder="Username" v-model.lazy="username" required>
       <br>
@@ -24,15 +23,15 @@
         this.isShowForm = ! this.isShowForm
       },
       deleteAccount(){
-        //TODO delete
         if(confirm("You are going to delete a user account!")){
           let postData = {'username': this.username};
+          let url = this.$store.state.url + "/deleteAccount";
           postData = JSON.stringify(postData);
-          this.$http.post('http://127.0.0.1:4000/deleteAccount', postData, {emulateJSON: true})
+          this.$http.post(url, postData, {emulateJSON: true})
             .then(response => response.json())
             .then(data => {
               if (data) {
-                let result = data['result']
+                let result = data['result'];
                 if (result === 'Okay'){
                   alert('Delete successfully')
                 } else {

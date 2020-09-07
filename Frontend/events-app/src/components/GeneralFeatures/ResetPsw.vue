@@ -34,10 +34,10 @@
       },
       methods: {
         resetPassword(){
-          //TODO change password
+          let url = this.$store.state.url + "/resetPSW";
           let postData = {'userId': this.$store.state.userId, 'password': this.newPassword};
           postData = JSON.stringify(postData);
-          this.$http.post('http://127.0.0.1:4000/resetPSW', postData, {emulateJSON: true})
+          this.$http.post(url, postData, {emulateJSON: true})
             .then(response => response.json())
             .then(data => {
               if (data){

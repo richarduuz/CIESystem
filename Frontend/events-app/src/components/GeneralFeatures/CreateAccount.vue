@@ -1,7 +1,6 @@
 <template>
     <div>
-        <button @click="showForm">Create a user teammate account</button>
-        <div class="login_input" v-show="isShowForm">
+        <div class="login_input">
             <label><b>Username:</b></label>
             <input type="text" placeholder="Enter Username" v-model="createUsername" required>
             <br>
@@ -44,10 +43,10 @@
                 this.isShowForm = ! this.isShowForm
             },
             createAccount(){
-                //TODO http request create account
+                let url = this.$store.state.url + '/signup';
                 let postData = {'username': this.createUsername, 'password': this.createPassword, 'title': this.createTitle};
                 postData = JSON.stringify(postData);
-                this.$http.post('http://127.0.0.1:4000/signup', postData, {emulateJSON: true})
+                this.$http.post(url, postData, {emulateJSON: true})
                     .then(response => response.json())
                     .then(data => {
                         if(data){

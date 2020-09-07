@@ -1,7 +1,6 @@
 <template>
   <div>
-    <button @click="showForm">Reset a teammate password</button>
-    <div v-show="isShowForm">
+    <div>
       <label><b>Input the username</b></label>
       <input type="text" placeholder="username" v-model="username" required>
       <br>
@@ -31,13 +30,14 @@
     },
     methods: {
       resetPassword(){
+        let url = this.$store.state.url + "/resetOtherPSW";
         let postData = {'username': this.username, 'password': this.newPassword};
         postData = JSON.stringify(postData);
-        this.$http.post("http://127.0.0.1:4000/resetOtherPSW", postData, {emulateJSON: true})
+        this.$http.post(url, postData, {emulateJSON: true})
           .then(response => response.json())
           .then(data => {
             if(data){
-              let result = data['result']
+              let result = data['result'];
               if (result === 'Okay'){
                 alert('Reset successfully')
               } else {

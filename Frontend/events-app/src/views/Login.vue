@@ -29,11 +29,12 @@
         methods: {
             submit() {
                 // alert("button test")
+                let url = this.$store.state.url + "/login";
                 this.username = this.$refs.uname.value;
                 this.psw = this.$refs.psw.value;
                 var postData = {"username": this.username, "password": this.psw};
                 postData = JSON.stringify(postData);
-                this.$http.post('http://127.0.0.1:4000/login', postData, {emulateJSON: true})
+                this.$http.post(url, postData, {emulateJSON: true})
                     .then(response=>response.json())
                     .then(data=>{
                         if (data){

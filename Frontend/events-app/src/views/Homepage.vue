@@ -7,33 +7,25 @@
         <h2>{{$store.state.userId}}</h2>
         <h2>{{$store.state.username}}</h2>
         <br>
-        <div class="userFeatures">
-            <create-account v-if="$store.state.userTitle === 'admin'"></create-account>
-            <reset-other-psw v-if="$store.state.userTitle === 'admin'"></reset-other-psw>
-            <delete-account v-if="$store.state.userTitle === 'admin'"></delete-account>
-            <button @click="showForm">I want to reset my password</button>
-            <reset-psw v-show="isShowForm"></reset-psw>
-        </div>
-        <br>
-        <div class="userFormFeatures">
-            <ul>
-                <li>
-                    <router-link :to="'/homepage/' + $store.state.username + '/form_history'">My Form History</router-link>
-                </li>
-                <li>
-                    <router-link :to="'/homepage/' + $store.state.username + '/create_form'">Create A New Form</router-link>
-                </li>
-            </ul>
-        </div>
+        <section>
+            <div class="userFormFeatures">
+                <ul>
+                    <li><router-link :to="'/homepage/' + $store.state.username + '/form_history'">My Form History</router-link></li>
+                    <li><router-link :to="'/homepage/' + $store.state.username + '/create_form'">Create A New Form</router-link></li>
+                    <li><router-link :to="'/homepage/' + $store.state.username + '/reset_my_password'">Reset My Password</router-link></li>
+                    <div v-if="$store.state.userTitle === 'admin'">
+                    <li><router-link :to="'/homepage/' + $store.state.username + '/reset_other_password'">Reset Other Password</router-link></li>
+                    <li><router-link :to="'/homepage/' + $store.state.username + '/create_account'">Create New Account</router-link></li>
+                    <li><router-link :to="'/homepage/' + $store.state.username + '/delete_account'">Delete An Account</router-link></li>
+                    </div>
+                </ul>
+            </div>
+        </section>
         <router-view/>
     </div>
 </template>
 
 <script>
-    import CreateAccount from '../components/GeneralFeatures/CreateAccount'
-    import ResetPsw from '../components/GeneralFeatures/ResetPsw'
-    import ResetOtherPsw from '../components/GeneralFeatures/ResetOtherPsw'
-    import DeleteAccount from '../components/GeneralFeatures/DeleteAccount'
     export default {
         name: "Homepage",
         data() {
@@ -50,23 +42,14 @@
             showSubMyForms(){
 
             }
-        },
-        components: {
-            CreateAccount,
-            ResetPsw,
-            ResetOtherPsw,
-            DeleteAccount
         }
     }
 </script>
 
 <style scoped>
-    .userFeatures{
-        text-align: left;
-    }
 
     div.userFormFeatures{
-        text-align: left;
+        float: left;
     }
 
     ul{

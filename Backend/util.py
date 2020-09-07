@@ -1,13 +1,20 @@
 def extractQuo(df):
-    row, colume = getSize(df)
-    keys = getKeys(df)
-    result = []
-    for i in range(row):
-        doc = {}
-        for j in keys:
-            doc[j] = str(df[j].values[i])
-        result.append(doc)
-    return result
+    response = {"status": ""}
+    try:
+        row, colume = getSize(df)
+        keys = getKeys(df)
+        result = []
+        for i in range(row):
+            doc = {}
+            for j in keys:
+                doc[j] = str(df[j].values[i])
+            result.append(doc)
+        response['status'] = "Okay"
+        response['body'] = result
+        return response
+    except:
+        response['status'] = "Extract Error"
+        return response
 
 
 

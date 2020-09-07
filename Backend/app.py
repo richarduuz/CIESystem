@@ -25,9 +25,9 @@ app = Flask(__name__)
 def bad_request(error):
     try:
         error = str(error)
-        return make_response({error:'Bad request'}, 400)
+        return make_response(jsonify({'error':'Bad request', 'status': 'error'}), 400)
     except:
-        return make_response({'error':'Bad request'}, 400)
+        return make_response(jsonify({'error':'Bad request', 'status': 'error'}), 400)
 
 @app.errorhandler(404)
 def not_found(error):
