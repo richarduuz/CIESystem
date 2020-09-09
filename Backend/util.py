@@ -1,3 +1,5 @@
+import pandas as pd
+
 def extractQuo(df):
     response = {"status": ""}
     try:
@@ -7,7 +9,13 @@ def extractQuo(df):
         for i in range(row):
             doc = {}
             for j in keys:
-                doc[j] = str(df[j].values[i])
+                j = j.strip()
+                if df[j].dtype == "datetime64[ns]":
+                    ts = pd.to_datetime(str(df[j].values[i]))
+                    d = ts.strftime('%Y.%m.%d')
+                    doc[j] = d
+                else:
+                    doc[j] = str(df[j].values[i])
             result.append(doc)
         response['status'] = "Okay"
         response['body'] = result

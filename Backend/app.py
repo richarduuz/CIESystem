@@ -6,6 +6,7 @@ from Backend.CouchDB import auth_user_by_id as auth_id
 from Backend.CouchDB import reset_password as reset_PSW
 from Backend.CouchDB import reset_other_password as reset_OPSW
 from Backend.CouchDB import delete_account as delete_a
+from Backend.CouchDB import create_new_quo as create_quo
 import json
 import pandas
 import Backend.util as util
@@ -151,6 +152,19 @@ def extractQuo():
         df = pandas.read_excel(file, sheet_name="Sheet1")
         result = util.extractQuo(df)
         return jsonify(result)
+    except:
+        bad_request("error")
+
+@app.route('/confirmQuotation', methods=['POST'])
+def confrimQuo():
+    try:
+        print("in confirm")
+        rawData = request.data.decode('utf-8')
+        data = json.loads(rawData)
+        quoDB = handler.Server['quotation']
+        result = create_quo(quoDB, data)
+        print(result)
+        return jsonify({'result':'okay'})
     except:
         bad_request("error")
 

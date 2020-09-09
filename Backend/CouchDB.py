@@ -78,6 +78,12 @@ def delete_account(db, username):
         result['reason'] = "user does not exist"
     return result
 
+def create_new_quo(db, quo):
+    #TODO send data to couchDB and save them
+    for item in quo:
+        print(item)
+    return {"result": "Okay"}
+
 
 
 
