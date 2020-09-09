@@ -26,7 +26,7 @@ app = Flask(__name__)
 def bad_request(error):
     try:
         error = str(error)
-        return make_response(jsonify({'error':'Bad request', 'status': 'error'}), 400)
+        return make_response(jsonify({"message": error}), 400)
     except:
         return make_response(jsonify({'error':'Bad request', 'status': 'error'}), 400)
 
@@ -34,9 +34,9 @@ def bad_request(error):
 def not_found(error):
     try:
         error = str(error)
-        return make_response({error: 'Resource not found'}, 400)
+        return make_response({"message": error}, 404)
     except:
-        return make_response({'error': 'Resource not found'}, 400)
+        return make_response({'error': 'Resource not found'}, 404)
 
 @app.route('/login', methods=["POST"])
 def auth_user():

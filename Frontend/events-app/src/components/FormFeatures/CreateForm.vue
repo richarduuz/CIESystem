@@ -67,7 +67,7 @@
         if(confirm("确认提交表格吗？")){
           let url = this.$store.state.url + "/confirmQuotation";
           console.log(url);
-          this.confirmedForm = {};
+          this.confirmedForm = [];
           for (let item of this.entries){
             this.confirmedForm.push(this.formDict((item)))
           }
