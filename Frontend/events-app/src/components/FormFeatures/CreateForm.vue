@@ -1,23 +1,27 @@
 <template>
   <div>
-    I am create Form
-    <br>
-    <table class="Form">
-      <tr>
-        <th v-for="attribute in $store.state.quotationAttributes" :key="attribute">{{attribute}}</th>
-      </tr>
-      <tr v-for="(entry, index) in entries" :key="index">
-        <th v-for="(value, subIndex) in $store.state.quotationAttributes" :key="subIndex"><input v-model="entries[index][subIndex]"></th>
-      </tr>
-<!--      <tr v-for="(item, index) in newEntries" :key="index">-->
-<!--        <th v-for="(attribute, subIndex) in $store.state.quotationAttributes" :key="subIndex"><input :id="'id'+index+subIndex"></th>-->
-<!--      </tr>-->
-    </table>
-    <input type="file" ref="file" id="file" @change="handleFileUpload">
-    <button :disabled="file === undefined" @click="submitForm">Submit</button>
-    <button @click="confirmForm">Confirm</button>
-    <button @click="createNewEntry">Create New Entry</button>
+    <div class="FormDiv">
+      I am from create form
+      <button @click="test">test</button>
+      <br>
+      <table class="Form">
+        <tr>
+          <th v-for="attribute in $store.getters.displayAttributes" :key="attribute">{{attribute}}</th>
+        </tr>
+        <tr v-for="(entry, index) in displayEntries" :key="index">
+          <th v-for="(value, subIndex) in $store.getters.displayAttributes" :key="subIndex">
+            <input v-model="displayEntries[index][subIndex]" :disabled="$store.getters.systemAttributes.includes($store.getters.displayAttributes[subIndex])"></th>
+        </tr>
+      </table>
+    </div>
+    <div>
+      <input type="file" ref="file" id="file" @change="handleFileUpload">
+      <button :disabled="file === undefined" @click="submitForm">Submit</button>
+      <button @click="confirmForm">Confirm</button>
+      <button @click="createNewEntry">Create New Entry</button>
+    </div>
   </div>
+
 </template>
 
 <script>
@@ -26,12 +30,15 @@
     data() {
       return {
         file: undefined,
-        newEntries: [],
-        entries: [],
+        displayEntries: [],
         confirmedForm: []
       }
     },
     methods: {
+      test() {
+        console.log(this.$store.getters.aDisplayAttributes)
+      },
+
       submitForm() {
         let url = this.$store.state.url + "/extractQuotation";
         let form = new FormData();
@@ -43,10 +50,10 @@
               for(let item of data['body']) {
                 for(let key in item){if (item[key] === 'nan'){item[key] = ''}}
                 let entry = [];
-                for (let attribute of this.$store.state.quotationAttributes){
+                for (let attribute of this.$store.getters.displayAttributes){
                   entry.push(item[attribute])
                 }
-                this.entries.push(entry)
+                this.displayEntries.push(entry)
               }
             } else {
               alert("表格样式无法解析")
@@ -68,10 +75,11 @@
           let url = this.$store.state.url + "/confirmQuotation";
           console.log(url);
           this.confirmedForm = [];
-          for (let item of this.entries){
+          for (let item of this.displayEntries){
             this.confirmedForm.push(this.formDict((item)))
           }
-          let postData = this.confirmedForm;
+          let postData = {"userId": this.$store.state.userId, "username": this.$store.state.username,
+            "userTitle": this.$store.state.userTitle, "body": this.confirmedForm};
           postData = JSON.stringify(postData);
           this.$http.post(url, postData, {emulateJSON: true})
             .then(response => response.json())
@@ -93,17 +101,17 @@
       },
 
       createNewEntry(){
-        this.entries.push([]);
-        console.log(this.entries);
+        this.displayEntries.push([]);
+        console.log(this.displayEntries);
       },
 
       formDict(item){
         let doc = {};
-        for (let i = 0; i<this.$store.state.quotationAttributes.length; i++){
-          if (this.$store.state.quotationAttributes[i]  === '销售'){
-            item[i] = this.$store.state.username;
-          }
-          doc[this.$store.state.quotationAttributes[i]] = item[i];
+        for (let i = 0; i<this.$store.getters.displayAttributes.length; i++){
+          doc[this.$store.getters.displayAttributes[i]] = item[i];
+        }
+        for (let attribute of this.$store.getters.aDisplayAttributes){
+          doc[attribute] = "";
         }
         return doc
       }
@@ -113,12 +121,12 @@
 </script>
 
 <style scoped>
+  .FormDiv {
+    overflow-x: auto;
+  }
 .Form table, th, td {
   border: 1px solid black;
 }
-  div {
-    overflow-x: auto;
-  }
   th {
     width: 155px;
   }

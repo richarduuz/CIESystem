@@ -5,7 +5,9 @@ const Home = () => import('../views/Home');
 const About = () => import('../views/About');
 const Login = () => import('../views/Login');
 const HomePage = () => import('../views/Homepage');
-const FormHistory = () => import('../components/FormFeatures/FormHistory');
+const CompletedForms = () => import('../components/FormFeatures/CompletedForms');
+const PendingForms = () => import('../components/FormFeatures/PendingForms');
+const ConcernedForms = () => import('../components/FormFeatures/ConcernedForms');
 const CreateForm = () => import('../components/FormFeatures/CreateForm');
 const resetPassword = () => import('../components/GeneralFeatures/ResetPsw');
 const resetOtherPassword = () => import('../components/GeneralFeatures/ResetOtherPsw');
@@ -43,33 +45,43 @@ Vue.use(VueRouter);
       component: HomePage,
       children: [
         {
-          path: 'form_history',
-          name: 'Form_History',
-          component: FormHistory
+          path: 'completed_forms',
+          name: 'Completed Forms',
+          component: CompletedForms
+        },
+        {
+          path: 'pending_forms',
+          name: 'Pending Forms',
+          component: PendingForms
+        },
+        {
+          path: 'concerned_forms',
+          name: 'Concerned Forms',
+          component: ConcernedForms
         },
         {
           path: 'create_form',
-          name: 'Create_Form',
+          name: 'Create Form',
           component: CreateForm
         },
         {
           path: 'reset_my_password',
-          name: 'Reset_My_Password',
+          name: 'Reset My Password',
           component: resetPassword
         },
         {
           path: 'reset_other_password',
-          name: 'Reset_Other_Password',
+          name: 'Reset Other Password',
           component: resetOtherPassword
         },
         {
           path: 'create_account',
-          name: 'Create_Account',
+          name: 'Create Account',
           component: CreateAccount
         },
         {
           path: 'delete_account',
-          name: 'Delete_Account',
+          name: 'Delete Account',
           component: DeleteAccount
         }
       ]

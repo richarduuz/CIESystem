@@ -10,7 +10,9 @@
         <section>
             <div class="userFormFeatures">
                 <ul>
-                    <li><router-link :to="'/homepage/' + $store.state.username + '/form_history'">My Form History</router-link></li>
+                    <li><router-link :to="'/homepage/' + $store.state.username + '/completed_forms'">Completed Forms</router-link></li>
+                    <li><router-link :to="'/homepage/' + $store.state.username + '/pending_forms'">Pending Forms</router-link></li>
+                    <li><router-link :to="'/homepage/' + $store.state.username + '/concerned_forms'">Concerned Forms</router-link></li>
                     <li><router-link :to="'/homepage/' + $store.state.username + '/create_form'">Create A New Form</router-link></li>
                     <li><router-link :to="'/homepage/' + $store.state.username + '/reset_my_password'">Reset My Password</router-link></li>
                     <div v-if="$store.state.userTitle === 'admin'">

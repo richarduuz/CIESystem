@@ -1,4 +1,5 @@
 import couchdb
+from datetime import datetime
 
 class CouchDBHandler:
     Username = ""
@@ -80,8 +81,15 @@ def delete_account(db, username):
 
 def create_new_quo(db, quo):
     #TODO send data to couchDB and save them
-    for item in quo:
-        print(item)
+    entries = quo['body']
+    userId = quo['userId']
+    username = quo['username']
+    userTitle = quo['userTitle']
+    for item in entries:
+        item['询价日期'] = datetime.today().strftime('%Y.%m.%d')
+        if userTitle == 'Sales':
+            item['销售'] = username
+        db.save(item)
     return {"result": "Okay"}
 
 

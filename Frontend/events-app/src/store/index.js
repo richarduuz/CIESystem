@@ -10,7 +10,7 @@ export default new Vuex.Store({
     userTitle: "",
     url: "http://127.0.0.1:4000",
     quotationAttributes: ["询价日期", "要求回复日期", "实际回复日期", "销售", "接单率", "客户要求时间", "客户", "品牌", "型号",
-      "数量", "TP", "官网价格$", "历史报价", "成本", "建议售价", "报价", "参考金额", "交期", "SPQ", "MOQ", "采购", "目前状态"]
+      "数量", "TP", "官网价格$", "历史报价", "成本", "建议报价", "报价", "参考金额", "交期", "SPQ", "MOQ", "采购", "目前状态"]
   },
   mutations: {
     setUserId(state, userId){
@@ -27,7 +27,25 @@ export default new Vuex.Store({
 
   },
   getters: {
-
+    displayAttributes(state) {
+      if (state.userTitle === 'Sales')
+      {
+        return ["询价日期", "要求回复日期", "实际回复日期", "接单率", "客户要求时间", "客户", "品牌", "型号",
+      "数量", "TP", "官网价格$", "历史报价", "成本", "建议报价", "报价", "参考金额", "交期", "SPQ", "MOQ", "目前状态"]
+      }
+      //TODO add if title is buyer and admin
+    },
+    aDisplayAttributes(state, getters) {
+      return state.quotationAttributes.filter(attribute => {
+        return getters.displayAttributes.indexOf(attribute) === -1;
+      })
+    },
+    systemAttributes(state) {
+      if (state.userTitle === 'Sales')
+      {
+        return ["询价日期", "实际回复日期", "销售", "采购", "参考金额"]
+      }
+    }
   }
 })
 

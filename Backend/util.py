@@ -1,4 +1,5 @@
 import pandas as pd
+from datetime import datetime
 
 def extractQuo(df):
     response = {"status": ""}
@@ -11,9 +12,14 @@ def extractQuo(df):
             for j in keys:
                 j = j.strip()
                 if df[j].dtype == "datetime64[ns]":
-                    ts = pd.to_datetime(str(df[j].values[i]))
+                    if j == "询价日期":
+                        ts = datetime.today()
+                    else:
+                        ts = pd.to_datetime(str(df[j].values[i]))
                     d = ts.strftime('%Y.%m.%d')
                     doc[j] = d
+                elif j == "接单率":
+                    doc[j] = "{:.0%}".format(df[j].values[i])
                 else:
                     doc[j] = str(df[j].values[i])
             result.append(doc)

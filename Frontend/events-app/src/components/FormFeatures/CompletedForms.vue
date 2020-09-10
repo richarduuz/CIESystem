@@ -1,6 +1,6 @@
 <template>
   <div>
-    I am form history
+    I am Completed Forms
   </div>
 </template>
 
