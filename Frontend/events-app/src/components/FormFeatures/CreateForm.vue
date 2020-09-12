@@ -15,7 +15,7 @@
           </th>
           <th>
             <select v-model="isImportant[index]" required>
-              <option value="No" selected>No</option>
+              <option value="No">No</option>
               <option value="Yes">Yes</option>
             </select>
           </th>
@@ -64,9 +64,15 @@
                 }
                 this.displayEntries.push(entry)
               }
+              for (let i = 0; i<this.displayEntries.length; i++){
+                this.isImportant[i] = 'No'
+              }
             } else {
               alert("表格样式无法解析")
             }
+          })
+          .catch(e => {
+            alert(e.status)
           })
       },
 
@@ -95,10 +101,12 @@
             .then(response => response.json())
             .then(data => {
               if (data){
-                alert("get response");
+                alert("已录入数据库");
               }
+            })
+            .catch(e => {
+              alert(e.status)
             });
-          console.log(this.confirmedForm);
         }
       },
 
@@ -112,7 +120,7 @@
 
       createNewEntry(){
         this.displayEntries.push([]);
-        console.log(this.displayEntries);
+        this.isImportant.push('No')
       },
 
       formDict(item, isImportant){

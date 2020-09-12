@@ -58,6 +58,7 @@
                             }
                         }
                     })
+                    .catch(e => alert(e.status))
             }
         }
     }

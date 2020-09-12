@@ -45,6 +45,7 @@
               }
             }
           })
+          .catch(e => alert(e.status))
       },
       showForm() {
         this.isShowForm = ! this.isShowForm

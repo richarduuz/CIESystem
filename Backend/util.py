@@ -25,9 +25,10 @@ def extractQuo(df):
             result.append(doc)
         response['status'] = "Okay"
         response['body'] = result
-        return response
-    except:
+    except Exception as e:
         response['status'] = "Extract Error"
+        response['message'] = str(e)
+    finally:
         return response
 
 

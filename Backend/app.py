@@ -1,4 +1,4 @@
-from flask import Flask, request, make_response, jsonify
+from flask import Flask, request, make_response, jsonify, abort
 from Backend.CouchDB import CouchDBHandler as ha
 from Backend.CouchDB import auth_user as auth
 from Backend.CouchDB import create_account as create
@@ -7,6 +7,7 @@ from Backend.CouchDB import reset_password as reset_PSW
 from Backend.CouchDB import reset_other_password as reset_OPSW
 from Backend.CouchDB import delete_account as delete_a
 from Backend.CouchDB import create_new_quo as create_quo
+from werkzeug.exceptions import BadRequest
 import json
 import pandas
 import Backend.util as util
@@ -24,26 +25,16 @@ app = Flask(__name__)
 
 @app.errorhandler(400)
 def bad_request(error):
-    try:
-        error = str(error)
-        return make_response(jsonify({"message": error}), 400)
-    except:
-        return make_response(jsonify({'error':'Bad request', 'status': 'error'}), 400)
+    abort(400, error)
 
 @app.errorhandler(404)
 def not_found(error):
-    try:
-        error = str(error)
-        return make_response({"message": error}, 404)
-    except:
-        return make_response({'error': 'Resource not found'}, 404)
+    abort(404, error)
 
 @app.route('/login', methods=["POST"])
 def auth_user():
     print('in the login')
     rawData = request.data.decode('utf-8')
-    print(rawData)
-    print(len(rawData))
     try:
         data = json.loads(rawData)
         loginUsername = data['username']
@@ -54,12 +45,8 @@ def auth_user():
             return jsonify({'result': 'Okay', 'username': loginUsername, "userid": result['userid'], 'userTitle': result['title']})
         else:
             return jsonify({'result': 'False'})
-
     except Exception as e:
-        print("in exception")
-        print(e)
         return jsonify({'result':'error'})
-        # bad_request("data cannot be read")
 
 @app.route('/signup', methods=["POST"])
 def sign_up():
@@ -91,8 +78,8 @@ def auth_user_by_id():
             return jsonify({'result': 'Okay'})
         else:
             return jsonify({'result': 'Old password wrong'})
-    except:
-        bad_request("wrong password")
+    except Exception as e:
+        bad_request(str(e))
 
 @app.route('/resetPSW', methods=['POST'])
 def reset_password():
@@ -106,8 +93,8 @@ def reset_password():
             return jsonify({"result": 'Okay'})
         else:
             return jsonify({'result': 'fail to reset'})
-    except:
-        bad_request("fail to reset")
+    except Exception as e:
+        bad_request(str(e))
 
 @app.route('/resetOtherPSW', methods=['POST'])
 def reset_other_password():
@@ -121,8 +108,8 @@ def reset_other_password():
             return jsonify({"result": "Okay"})
         else:
             return jsonify({"result": "fail to reset"})
-    except:
-        bad_request("fail to reset")
+    except Exception as e:
+        bad_request(str(e))
 
 @app.route('/deleteAccount', methods=['POST'])
 def delete_account():
@@ -136,8 +123,8 @@ def delete_account():
             return jsonify({"result": "Okay"})
         else:
             return jsonify({'result': 'failed to delete', 'reason': result['reason']})
-    except:
-        bad_request("fail to delete")
+    except Exception as e:
+        bad_request(str(e))
 
 @app.route('/extractQuotation', methods=['POST'])
 def extractQuo():
@@ -151,9 +138,11 @@ def extractQuo():
         file = file.get(filename)
         df = pandas.read_excel(file, sheet_name="Sheet1")
         result = util.extractQuo(df)
+        if result['status'] != "Okay":
+            raise Exception(result['message'])
         return jsonify(result)
-    except:
-        bad_request("error")
+    except Exception as e:
+        bad_request(str(e))
 
 @app.route('/confirmQuotation', methods=['POST'])
 def confrimQuo():
@@ -165,8 +154,8 @@ def confrimQuo():
         result = create_quo(quoDB, data)
         print(result)
         return jsonify({'result':'okay'})
-    except:
-        bad_request("error")
+    except Exception as e:
+        bad_request(str(e))
 
 
 

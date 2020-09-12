@@ -62,6 +62,7 @@
                 else {alert('Old Password Wrong!')}
               }
             })
+            .catch(e => alert(e.status));
         }
       }
     }
