@@ -7,21 +7,20 @@ from Backend.CouchDB import reset_password as reset_PSW
 from Backend.CouchDB import reset_other_password as reset_OPSW
 from Backend.CouchDB import delete_account as delete_a
 from Backend.CouchDB import create_new_quo as create_quo
-from werkzeug.exceptions import BadRequest
 import json
 import pandas
 import Backend.util as util
 
+app = Flask(__name__)
+app.config.from_pyfile('settings.py')
 
-url = "127.0.0.1"
-username = 'admin'
-password = 'password'
+url = app.config['COUCHDB_URL']
+username = app.config['COUCHDB_NAME']
+password = app.config['COUCHDB_PASSWORD']
+host = app.config['HOST']
+port = app.config['PORT']
 
 handler = ha(url, username, password)
-# users = handler.Server['staff']
-# print(users['0e2873e20cda84963a1e60b5360011b5'])
-
-app = Flask(__name__)
 
 @app.errorhandler(400)
 def bad_request(error):
@@ -161,5 +160,5 @@ def confrimQuo():
 
 
 if __name__ == '__main__':
-    app.run(host='127.0.0.1' ,port="4000")
+    app.run(host=host ,port=port)
 
