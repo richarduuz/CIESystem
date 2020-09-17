@@ -7,6 +7,8 @@ from Backend.CouchDB import reset_password as reset_PSW
 from Backend.CouchDB import reset_other_password as reset_OPSW
 from Backend.CouchDB import delete_account as delete_a
 from Backend.CouchDB import create_new_quo as create_quo
+from Backend.CouchDB import getUncompletedForms
+from Backend.CouchDB import confirm_quo_price
 import json
 import pandas
 import Backend.util as util
@@ -144,17 +146,37 @@ def extractQuo():
         bad_request(str(e))
 
 @app.route('/confirmQuotation', methods=['POST'])
-def confrimQuo():
+def confirmQuo():
     try:
-        print("in confirm")
         rawData = request.data.decode('utf-8')
         data = json.loads(rawData)
         quoDB = handler.Server['quotation']
         result = create_quo(quoDB, data)
-        print(result)
-        return jsonify({'result':'okay'})
+        return jsonify({'result':'Okay'})
     except Exception as e:
         bad_request(str(e))
+
+@app.route('/uncompletedForms', methods=['GET'])
+def uncompletedForms():
+    try:
+        quoDB = handler.Server['quotation']
+        result = getUncompletedForms(quoDB)
+        result = {'status': 'Okay', 'body': result}
+        return jsonify(result)
+    except Exception as e:
+        bad_request(str(e))
+
+@app.route('/confirmQuotationPrice', methods=['POST'])
+def confirmQuoPrice():
+    try:
+        rawData = request.data.decode('utf-8')
+        data = json.loads(rawData)
+        quoDB = handler.Server['quotation']
+        confirm_quo_price(quoDB, data)
+        return jsonify({'result':'Okay'})
+    except Exception as e:
+        bad_request(str(e))
+
 
 
 

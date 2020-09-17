@@ -13,6 +13,7 @@ const resetPassword = () => import('../components/GeneralFeatures/ResetPsw');
 const resetOtherPassword = () => import('../components/GeneralFeatures/ResetOtherPsw');
 const CreateAccount = () => import('../components/GeneralFeatures/CreateAccount');
 const DeleteAccount = () => import('../components/GeneralFeatures/DeleteAccount');
+const UncompletedForms = () => import('../components/FormFeatures/Buyer/UncompletedForms');
 
 Vue.use(VueRouter);
 
@@ -39,11 +40,16 @@ Vue.use(VueRouter);
       name: 'Login',
       component: Login
   },
-  {
+  { 
       path: '/homepage/:username',
       name: 'HomePage',
       component: HomePage,
       children: [
+        {
+          path: 'uncompleted_forms',
+          name: 'Uncompleted Forms',
+          component: UncompletedForms
+        },
         {
           path: 'completed_forms',
           name: 'Completed Forms',

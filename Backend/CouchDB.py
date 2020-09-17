@@ -82,15 +82,42 @@ def delete_account(db, username):
 def create_new_quo(db, quo):
     #TODO send data to couchDB and save them
     entries = quo['body']
-    userId = quo['userId']
     username = quo['username']
     userTitle = quo['userTitle']
     for item in entries:
-        item['询价日期'] = datetime.today().strftime('%Y.%m.%d')
+        item['询价日期'] = datetime.now().strftime('%Y.%m.%d %H:%M')
         if userTitle == 'Sales':
             item['销售'] = username
+        item['目前状态'] = "等待采购回复"
         db.save(item)
     return {"result": "Okay"}
+
+def getUncompletedForms(db):
+    result = []
+    for doc in db:
+        tmp = dict(db[doc])
+        if tmp['目前状态'] == '等待采购回复':
+            tmp['quoId'] = doc
+            result.append(tmp)
+    return result
+
+def confirm_quo_price(db, quo):
+    entries = quo['body']
+    username = quo['username']
+    userTitle = quo['userTitle']
+    for item in entries:
+        quoId = item['quoId']
+        if quoId in db:
+            doc = db.get(quoId)
+            doc['实际回复日期'] = datetime.now().strftime('%Y.%m.%d %H:%M')
+            if userTitle == 'Buyer':
+                doc['采购'] = username
+            doc['目前状态'] = '采购已回复'
+            db.save(doc)
+
+
+
+
 
 
 

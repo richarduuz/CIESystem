@@ -3,25 +3,15 @@
     I am from create form
     <button @click="test">test</button>
     <br>
-    <div class="FormDiv">
-      <table class="Form">
-        <tr>
-          <th v-for="attribute in $store.getters.displayAttributes" :key="attribute">{{attribute}}</th>
-          <th>是否视为重要项目</th>
-        </tr>
-        <tr v-for="(entry, index) in displayEntries" :key="index">
-          <th v-for="(value, subIndex) in $store.getters.displayAttributes" :key="subIndex">
-            <input class="FormInput" v-model="displayEntries[index][subIndex]" :disabled="$store.getters.systemAttributes.includes($store.getters.displayAttributes[subIndex])">
-          </th>
-          <th>
-            <select v-model="isImportant[index]" required>
-              <option value="No">No</option>
-              <option value="Yes">Yes</option>
-            </select>
-          </th>
-        </tr>
-      </table>
-    </div>
+    <quo-forms :display-entries="displayEntries" @formValueChanged="formValueChanged">
+      <th slot="isImportant">是否视为重要项目</th>
+      <template slot-scope="slot">
+        <select v-model="isImportant[slot.data]" required>
+          <option value="No">No</option>
+          <option value="Yes">Yes</option>
+        </select>
+      </template>
+    </quo-forms>
     <div>
       <input type="file" ref="file" id="file" @change="handleFileUpload">
       <button :disabled="file === undefined" @click="submitForm">Submit</button>
@@ -33,6 +23,9 @@
 </template>
 
 <script>
+  import quoForms from '../FormFeatures/quoForms';
+  import {exportDisplayForm} from '../../functions/functions'
+
   export default {
     name: "CreateForm",
     data() {
@@ -45,7 +38,7 @@
     },
     methods: {
       test() {
-        console.log(this.confirmedForm)
+        console.log(this.isImportant)
       },
 
       submitForm() {
@@ -56,14 +49,15 @@
           .then(response => response.json())
           .then(data => {
             if (data['status'] === 'Okay'){
-              for(let item of data['body']) {
-                for(let key in item){if (item[key] === 'nan'){item[key] = ''}}
-                let entry = [];
-                for (let attribute of this.$store.getters.displayAttributes){
-                  entry.push(item[attribute])
-                }
-                this.displayEntries.push(entry)
-              }
+              this.displayEntries = exportDisplayForm(data['body'], this.$store.getters.displayAttributes);
+              // for(let item of data['body']) {
+              //   for(let key in item){if (item[key] === 'nan'){item[key] = ''}}
+              //   let entry = [];
+              //   for (let attribute of this.$store.getters.displayAttributes){
+              //     entry.push(item[attribute])
+              //   }
+              //   this.displayEntries.push(entry)
+              // }
               for (let i = 0; i<this.displayEntries.length; i++){
                 this.isImportant[i] = 'No'
               }
@@ -88,7 +82,6 @@
       confirmForm(){
         if(confirm("确认提交表格吗？")){
           let url = this.$store.state.url + "/confirmQuotation";
-          console.log(url);
           this.confirmedForm = [];
           for (let i = 0; i<this.displayEntries.length; i++){
             this.confirmedForm.push(this.formDict(this.displayEntries[i], this.isImportant[i]))
@@ -110,17 +103,24 @@
         }
       },
 
+      formValueChanged(value){
+        this.displayEntries[value[0]][value[1]] = value[2];
+      },
+
+      createNewEntry(){
+        this.displayEntries.push([]);
+        this.isImportant.push('No')
+      },
+
+
+
+
       checkFilename(filename){
         let name = filename.split('.');
         name = name[name.length-1];
         let result = false;
         name === 'xlsx' || name === 'xls' ? result = true : result ;
         return result
-      },
-
-      createNewEntry(){
-        this.displayEntries.push([]);
-        this.isImportant.push('No')
       },
 
       formDict(item, isImportant){
@@ -135,6 +135,9 @@
         return doc
       }
     },
+    components: {
+      quoForms
+    }
 
   }
 </script>

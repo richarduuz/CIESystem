@@ -3,22 +3,26 @@
         <h2>Please Login first</h2>
     </div>
     <div v-else>
-        <h2>This is the homepage</h2>
-        <h2>{{$store.state.userId}}</h2>
-        <h2>{{$store.state.username}}</h2>
+        <h2>欢迎来到主页{{$store.state.username}}</h2>
+        <h2>{{$store.state.userTitle}}</h2>
         <br>
         <section>
             <div class="userFormFeatures">
                 <ul>
-                    <li><router-link :to="'/homepage/' + $store.state.username + '/completed_forms'">Completed Forms</router-link></li>
-                    <li><router-link :to="'/homepage/' + $store.state.username + '/pending_forms'">Pending Forms</router-link></li>
-                    <li><router-link :to="'/homepage/' + $store.state.username + '/concerned_forms'">Concerned Forms</router-link></li>
-                    <li><router-link :to="'/homepage/' + $store.state.username + '/create_form'">Create A New Form</router-link></li>
+                    <div v-if="$store.state.userTitle === 'Buyer'">
+                        <li><router-link :to="'/homepage/' + $store.state.username + '/uncompleted_forms'">Uncompleted Forms</router-link></li>
+                    </div>
+                    <div v-if="$store.state.userTitle === 'Sales'">
+                        <li><router-link :to="'/homepage/' + $store.state.username + '/completed_forms'">Completed Forms</router-link></li>
+                        <li><router-link :to="'/homepage/' + $store.state.username + '/pending_forms'">Pending Forms</router-link></li>
+                        <li><router-link :to="'/homepage/' + $store.state.username + '/concerned_forms'">Concerned Forms</router-link></li>
+                        <li><router-link :to="'/homepage/' + $store.state.username + '/create_form'">Create A New Form</router-link></li>
+                    </div>
                     <li><router-link :to="'/homepage/' + $store.state.username + '/reset_my_password'">Reset My Password</router-link></li>
                     <div v-if="$store.state.userTitle === 'admin'">
-                    <li><router-link :to="'/homepage/' + $store.state.username + '/reset_other_password'">Reset Other Password</router-link></li>
-                    <li><router-link :to="'/homepage/' + $store.state.username + '/create_account'">Create New Account</router-link></li>
-                    <li><router-link :to="'/homepage/' + $store.state.username + '/delete_account'">Delete An Account</router-link></li>
+                        <li><router-link :to="'/homepage/' + $store.state.username + '/reset_other_password'">Reset Other Password</router-link></li>
+                        <li><router-link :to="'/homepage/' + $store.state.username + '/create_account'">Create New Account</router-link></li>
+                        <li><router-link :to="'/homepage/' + $store.state.username + '/delete_account'">Delete An Account</router-link></li>
                     </div>
                 </ul>
             </div>
