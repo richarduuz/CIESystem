@@ -50,14 +50,6 @@
           .then(data => {
             if (data['status'] === 'Okay'){
               this.displayEntries = exportDisplayForm(data['body'], this.$store.getters.displayAttributes);
-              // for(let item of data['body']) {
-              //   for(let key in item){if (item[key] === 'nan'){item[key] = ''}}
-              //   let entry = [];
-              //   for (let attribute of this.$store.getters.displayAttributes){
-              //     entry.push(item[attribute])
-              //   }
-              //   this.displayEntries.push(entry)
-              // }
               for (let i = 0; i<this.displayEntries.length; i++){
                 this.isImportant[i] = 'No'
               }
@@ -95,6 +87,7 @@
             .then(data => {
               if (data){
                 alert("已录入数据库");
+                this.toHomepage()
               }
             })
             .catch(e => {
@@ -133,7 +126,13 @@
         }
         doc['isImportant'] = isImportant;
         return doc
-      }
+      },
+      toHomepage(){
+                let path = '/homepage/' + this.$store.state.username;
+                this.$router.push({
+                    path
+                })
+            }
     },
     components: {
       quoForms

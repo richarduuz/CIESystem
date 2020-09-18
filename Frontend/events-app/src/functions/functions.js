@@ -1,4 +1,8 @@
+import Vue from 'vue'
+
 //-------------Form related functions----------------
+
+
 
 function exportDisplayForm(data, displayAttributes){
   let result = [];
@@ -13,4 +17,18 @@ function exportDisplayForm(data, displayAttributes){
   return result
 }
 
-export {exportDisplayForm}
+function getDisplayAttribute(index, attributesArray){
+  return attributesArray[index]
+}
+
+function getDisplayAttributeIndex(attribute, attributesArray){
+  return attributesArray.indexOf(attribute)
+}
+
+function toHomepage(url, push){
+  push({
+    url
+  })
+}
+
+export {exportDisplayForm, getDisplayAttribute, getDisplayAttributeIndex, toHomepage}

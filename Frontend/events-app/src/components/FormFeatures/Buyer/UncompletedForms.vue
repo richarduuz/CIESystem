@@ -2,72 +2,77 @@
   <div>
     <h2>This is uncompleted forms</h2>
     <button @click="test()"></button>
-    <quo-forms :displayEntries="displayEntries" @formValueChanged="formValueChanged">
-    </quo-forms>
+    <div v-if="displayEntries.length !== 0">
+      <quo-forms :displayEntries="Object.values(displayEntries)" @formValueChangedId="formValueChangedId" @formValueChanged="formValueChanged">
+      </quo-forms>
+    </div>
+    <h2 v-else>目前没有请求的报价单</h2>
     <button @click="submitForm">提交</button>
   </div>
 </template>
 
 <script>
   import quoForms from '../quoForms';
-  import {exportDisplayForm} from '../../../functions/functions'
+  import {exportDisplayForm, getDisplayAttribute} from '../../../functions/functions'
 
   export default {
     name: "UncompletedForms",
-
-
     asyncComputed: {
-      displayEntries() {
-        let url = this.$store.state.url + '/uncompletedForms';
-        return this.$http.get(url)
-          .then(response => response.json())
-          .then(data => this.processingData(data))
+      displayEntries: {
+        get() {
+          let url = this.$store.state.url + '/uncompletedForms';
+          return this.$http.get(url)
+            .then(response => response.json())
+            .then(data => this.processingData(data))
+        },
+        default: {}
       }
     },
     methods: {
       test(){
-        console.log(this.wholeForms)
+        console.log(this.displayEntries)
       },
       formInputClassActive(item){
         return this.$store.getters.systemAttributes.includes(item)
       },
+      formValueChangedId(value){
+        let quoId = value[0];
+        let attribute = getDisplayAttribute(value[1], this.$store.getters.displayAttributes)
+        this.changedValues[quoId][attribute] = value[2]
+      },
       formValueChanged(value){
-        this.wholeForms[value[0]]
-
-        this.displayEntries[[value[0]]][value[1]] = value[2];
-        let doc = {};
-        doc[this.$store.getters.displayAttributes[value[1]]] = value[2];
-        this.changedValues[value[0]] = doc;
-        console.log(this.changedValues)
+        this.displayEntries[value[0]][value[1]] = value[2]
       },
       submitForm(){
-        let url = this.$store.state.url + '/confirmQuotationPrice';
-        this.confirmedForm = [];
-        for (let i = 0; i<this.displayEntries.length; i++){
-          this.confirmedForm.push(this.formDict(this.displayEntries[i]))
-        }
+        if (confirm("确定要提交吗")){
+          let url = this.$store.state.url + '/confirmQuotationPrice';
         let postData = {"userId": this.$store.state.userId, "username": this.$store.state.username,
-            "userTitle": this.$store.state.userTitle, "body": this.confirmedForm};
+            "userTitle": this.$store.state.userTitle, "body": this.changedValues};
         postData = JSON.stringify(postData);
         this.$http.post(url, postData, {emulateJSON: true})
           .then(response => response.json())
           .then(data => {
             if (data){
-              alert('Okay')
+              alert(data['status'], data['message'])
+              this.toHomepage()
             }
           })
           .catch(()=> alert("error"))
+        }
       },
-
 
 
       //---------------Internal Functions---------------//
       processingData(data) {
-        let result = [];
+        let tmp = [];
+        let result = {};
         this.exportWholeForm(data);
         this.exportquoId(data);
-        result = exportDisplayForm(data['body'], this.$store.getters.displayAttributes);
-        return result
+        tmp = exportDisplayForm(data['body'], this.$store.getters.displayAttributes);
+        for (let i = 0; i<tmp.length; i++){
+          result[this.wholeForms[i]['quoId']] = tmp[i]
+        }
+        return tmp
       },
       exportWholeForm(data){
         for (let item of data['body']) {
@@ -76,7 +81,7 @@
       },
       exportquoId(data){
         for(let item of data['body']){
-          this.changedValues.push({'quoId': item['quoId']})
+          this.changedValues[item['quoId']] = {}
         }
       },
       formDict(item){
@@ -88,13 +93,19 @@
           doc[attribute] = "";
         }
         return doc
-      }
+      },
+      toHomepage(){
+                let path = '/homepage/' + this.$store.state.username;
+                this.$router.push({
+                    path
+                })
+            }
     },
     data() {
       return {
         confirmedForm: [],
         wholeForms: [],
-        changedValues: []
+        changedValues: {}
       }
     },
     components:{

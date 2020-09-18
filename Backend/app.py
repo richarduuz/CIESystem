@@ -172,8 +172,11 @@ def confirmQuoPrice():
         rawData = request.data.decode('utf-8')
         data = json.loads(rawData)
         quoDB = handler.Server['quotation']
-        confirm_quo_price(quoDB, data)
-        return jsonify({'result':'Okay'})
+        result = confirm_quo_price(quoDB, data)
+        if result['status'] == 'Okay':
+            return jsonify({'status':'Okay', 'message': "已录入数据库"})
+        else:
+            return jsonify({'status': 'Error','message': result['message']})
     except Exception as e:
         bad_request(str(e))
 

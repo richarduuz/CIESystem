@@ -102,19 +102,26 @@ def getUncompletedForms(db):
     return result
 
 def confirm_quo_price(db, quo):
-    entries = quo['body']
-    username = quo['username']
-    userTitle = quo['userTitle']
-    for item in entries:
-        quoId = item['quoId']
-        if quoId in db:
-            doc = db.get(quoId)
-            doc['实际回复日期'] = datetime.now().strftime('%Y.%m.%d %H:%M')
-            if userTitle == 'Buyer':
-                doc['采购'] = username
-            doc['目前状态'] = '采购已回复'
-            db.save(doc)
-
+    result = {"status": "Okay"}
+    try:
+        entries = quo['body']
+        username = quo['username']
+        userTitle = quo['userTitle']
+        for quoId in entries.keys():
+            if quoId in db:
+                doc = db.get(quoId)
+                doc['实际回复日期'] = datetime.now().strftime('%Y.%m.%d %H:%M')
+                if userTitle == 'Buyer':
+                    doc['采购'] = username
+                doc['目前状态'] = '采购已回复'
+                for key in entries[quoId].keys():
+                    doc[key] = entries[quoId][key]
+                db.save(doc)
+    except Exception as e:
+        result['status'] = "Error"
+        result['message'] = str(e)
+    finally:
+        return result
 
 
 

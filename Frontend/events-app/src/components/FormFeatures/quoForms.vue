@@ -21,19 +21,23 @@
 </template>
 
 <script>
+  import {getDisplayAttributeIndex} from '../../functions/functions'
+
   export default {
     name: "quoForms",
-    props:{
-      displayEntries: {
-        type: Array
-      }
-    },
+    props:['displayEntries'],
     methods: {
       formInputClassActive(item){
         return this.$store.getters.systemAttributes.includes(item)
       },
       displayValueChanged(value){
-        this.$emit("formValueChanged", value)
+        this.$emit("formValueChanged", value);
+        if (this.$store.getters.displayAttributes.includes("quoId")){
+          let index = getDisplayAttributeIndex("quoId", this.$store.getters.displayAttributes);
+          value[0] = this.displayEntries[value[0]][index];
+          this.$emit("formValueChangedId", value);
+        }
+        //TODO emit the quoId
       }
     }
   }
