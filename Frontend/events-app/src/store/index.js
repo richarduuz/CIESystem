@@ -10,7 +10,8 @@ export default new Vuex.Store({
     userTitle: "",
     url: "http://127.0.0.1:4000",
     quotationAttributes: ["询价日期", "要求回复日期", "实际回复日期", "销售", "接单率", "客户要求时间", "客户", "品牌", "型号",
-      "数量", "TP", "官网价格$", "历史报价", "成本", "建议报价", "报价", "参考金额", "交期", "SPQ", "MOQ", "采购", "目前状态", "quoId"]
+      "数量", "TP", "官网价格$", "历史报价", "成本", "建议报价", "报价", "参考金额", "供应商", "交期", "SPQ", "MOQ", "采购", "目前状态", "quoId"],
+    systemAttributes: ["询价日期", "实际回复日期", "quoId" ,"销售", "采购", "目前状态"]
   },
   mutations: {
     setUserId(state, userId){
@@ -34,7 +35,7 @@ export default new Vuex.Store({
       "数量", "TP", "官网价格$", "历史报价", "成本", "建议报价", "报价", "参考金额", "交期", "SPQ", "MOQ", "目前状态", "quoId"]
       } else if (state.userTitle === 'Buyer'){
         return ["询价日期", "要求回复日期", "实际回复日期", "接单率", "客户要求时间", "客户", "品牌", "型号",
-      "数量", "TP", "官网价格$", "历史报价", "成本", "建议报价", "报价", "参考金额", "交期", "SPQ", "MOQ", "采购", "目前状态", "quoId"]
+      "数量", "TP", "官网价格$", "历史报价", "成本", "建议报价", "报价", "参考金额", "供应商", "交期", "SPQ", "MOQ", "采购", "目前状态", "quoId"]
       }
       //TODO add if title is admin
     },
@@ -43,13 +44,11 @@ export default new Vuex.Store({
         return getters.displayAttributes.indexOf(attribute) === -1;
       })
     },
-    systemAttributes(state) {
-      if (state.userTitle === 'Sales')
-      {
-        return ["询价日期", "实际回复日期", "销售", "采购", "参考金额", "quoId"]
+    uneditableAttributes(state){
+      if (state.userTitle === 'Sales'){
+        return ["成本", "建议报价", "报价", "参考金额", "交期"]
       } else if (state.userTitle === 'Buyer'){
-        return ["询价日期", "要求回复日期", "实际回复日期", "接单率", "客户要求时间", "客户", "品牌", "型号",
-      "数量", "TP", "官网价格$", "历史报价", "交期", "SPQ", "MOQ", "采购", "目前状态", "quoId"]
+        return ["接单率","客户要求时间","客户","品牌","型号","数量","TP","历史报价" ,"SPQ" ,"MOQ"]
       }
     }
   }

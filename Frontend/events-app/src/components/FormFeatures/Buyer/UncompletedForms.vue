@@ -2,17 +2,22 @@
   <div>
     <h2>This is uncompleted forms</h2>
     <button @click="test()"></button>
-    <div v-if="displayEntries.length !== 0">
-      <quo-forms :displayEntries="Object.values(displayEntries)" @formValueChangedId="formValueChangedId" @formValueChanged="formValueChanged">
-      </quo-forms>
+    <div>
+      <h2 v-if="Object.keys(displayEntries).length === 0">目前没有请求的报价单</h2>
+      <div v-else>
+        <quo-forms :displayEntries="Object.values(displayEntries)" @formValueChangedId="formValueChangedId" @formValueChanged="formValueChanged">
+        </quo-forms>
+      </div>
     </div>
-    <h2 v-else>目前没有请求的报价单</h2>
-    <button @click="submitForm">提交</button>
+    <button @click="submitForm" class="submitBtn">提交</button>
+    <form-rows :rows="Object.keys(displayEntries).length"></form-rows>
+    <div class="infoDiv">I am test division</div>
   </div>
 </template>
 
 <script>
   import quoForms from '../quoForms';
+  import FormRows from '../FormRows'
   import {exportDisplayForm, getDisplayAttribute} from '../../../functions/functions'
 
   export default {
@@ -30,10 +35,8 @@
     },
     methods: {
       test(){
-        console.log(this.displayEntries)
-      },
-      formInputClassActive(item){
-        return this.$store.getters.systemAttributes.includes(item)
+        let test = {}
+        console.log(Object.keys(test).length)
       },
       formValueChangedId(value){
         let quoId = value[0];
@@ -109,7 +112,8 @@
       }
     },
     components:{
-      quoForms
+      quoForms,
+      FormRows
     }
   }
 </script>
@@ -129,6 +133,19 @@
     max-width: 100%;
     white-space: nowrap;
     background-color: #d3d3d3;
+  }
+  .infoDiv{
+    position: absolute;
+    right: 20px;
+    top: 65%;
+    width: 80%;
+    border: 1px solid blue;
+  }
+
+  button.submitBtn{
+    position: absolute;
+    top: 460px;
+    right: 40%;
   }
 
 </style>

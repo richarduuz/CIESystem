@@ -101,6 +101,15 @@ def getUncompletedForms(db):
             result.append(tmp)
     return result
 
+def getPendingForms(db):
+    result = []
+    for doc in db:
+        tmp = dict(db[doc])
+        if tmp['目前状态'] == '采购已回复':
+            tmp['quoId'] = doc
+            result.append(tmp)
+    return result
+
 def confirm_quo_price(db, quo):
     result = {"status": "Okay"}
     try:
@@ -122,6 +131,8 @@ def confirm_quo_price(db, quo):
         result['message'] = str(e)
     finally:
         return result
+
+
 
 
 

@@ -7,8 +7,7 @@ from Backend.CouchDB import reset_password as reset_PSW
 from Backend.CouchDB import reset_other_password as reset_OPSW
 from Backend.CouchDB import delete_account as delete_a
 from Backend.CouchDB import create_new_quo as create_quo
-from Backend.CouchDB import getUncompletedForms
-from Backend.CouchDB import confirm_quo_price
+from Backend.CouchDB import getUncompletedForms, confirm_quo_price, getPendingForms
 import json
 import pandas
 import Backend.util as util
@@ -162,6 +161,17 @@ def uncompletedForms():
         quoDB = handler.Server['quotation']
         result = getUncompletedForms(quoDB)
         result = {'status': 'Okay', 'body': result}
+        return jsonify(result)
+    except Exception as e:
+        bad_request(str(e))
+
+@app.route('/pendingForms', methods=['GET'])
+def pendingforms():
+    try:
+        quoDB = handler.Server['quotation']
+        result = getPendingForms(quoDB)
+        result = {'status': 'Okay', 'body': result}
+        print(result)
         return jsonify(result)
     except Exception as e:
         bad_request(str(e))
