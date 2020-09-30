@@ -10,13 +10,25 @@
         <tbody>
           <tr v-for="(entry, index) in displayEntries" :key="index">
             <td v-for="(value, subIndex) in $store.getters.displayAttributes" :key="subIndex">
-              <input :class="{FormInput: formInputClassActive($store.getters.displayAttributes[subIndex])}"
+              <div v-if="$store.getters.displayAttributes[subIndex] === '紧急程度'">
+                <select v-model="displayEntries[index][subIndex]"
+                        @change="displayValueChanged([index, subIndex, $event.target.value])" required>
+                  <option value="紧急重要">紧急重要</option>
+                  <option value="重要不紧急">重要不紧急</option>
+                  <option value="紧急不重要">紧急不重要</option>
+                  <option value="不紧急不重要">不紧急不重要</option>
+                </select>
+              </div>
+              <div v-else>
+                 <input :class="{FormInput: formInputClassActive($store.getters.displayAttributes[subIndex])}"
                      v-model="displayEntries[index][subIndex]"
                      :disabled="formInputClassActive($store.getters.displayAttributes[subIndex])"
                       @change="displayValueChanged([index, subIndex, $event.target.value])">
+              </div>
             </td>
             <td>
-              <slot :data="index"></slot>
+              <slot :data="{index: index, quoId: quoIdIndex[index]}">
+              </slot>
             </td>
           </tr>
         </tbody>
@@ -29,7 +41,7 @@
 
   export default {
     name: "quoForms",
-    props:['displayEntries'],
+    props:['displayEntries', 'quoIdIndex'],
     methods: {
       formInputClassActive(item){
         return this.$store.state.systemAttributes.includes(item) || this.$store.getters.uneditableAttributes.includes(item)
@@ -49,7 +61,6 @@
 
 <style scoped>
   .FormDiv {
-
     position: absolute;
     overflow-x: auto;
     height: 250px;

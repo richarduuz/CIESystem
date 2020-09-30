@@ -1,5 +1,6 @@
 <template>
   <div>
+    <button @click="test"></button>
     <div v-if="displayEntries.length === 0">
       <h2>请添加表格</h2>
     </div>
@@ -9,7 +10,7 @@
       <quo-forms :display-entries="displayEntries" @formValueChanged="formValueChanged">
         <th slot="isImportant">是否视为重要项目</th>
         <template slot-scope="slot">
-          <select v-model="isImportant[slot.data]" required>
+          <select v-model="isImportant[slot.data['index']]" required>
             <option value="No">No</option>
             <option value="Yes">Yes</option>
           </select>
@@ -43,7 +44,7 @@
     },
     methods: {
       test() {
-        console.log(this.isImportant)
+        console.log(this.displayEntries)
       },
 
       submitForm() {

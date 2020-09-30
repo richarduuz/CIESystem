@@ -5,9 +5,13 @@ import './../node_modules/bulma/css/bulma.css'
 import VueResource from 'vue-resource'
 import store from './store'
 import AsyncComputed from 'vue-async-computed'
+import Element from 'element-ui'
+
 
 Vue.use(VueResource);
 Vue.use(AsyncComputed)
+Vue.use(Element)
+
 
 
 Vue.config.productionTip = false

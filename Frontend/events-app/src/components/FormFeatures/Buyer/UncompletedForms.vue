@@ -5,19 +5,24 @@
     <div>
       <h2 v-if="Object.keys(displayEntries).length === 0">目前没有请求的报价单</h2>
       <div v-else>
-        <quo-forms :displayEntries="Object.values(displayEntries)" @formValueChangedId="formValueChangedId" @formValueChanged="formValueChanged">
+        <quo-forms :displayEntries="Object.values(displayEntries)" :quo-id-index="quoIdIndex" @formValueChangedId="formValueChangedId" @formValueChanged="formValueChanged">
+          <th slot="isImportant">是否回复</th>
+          <template slot-scope="slot">
+            <button @click="respondQuo(slot.data['quoId'])">回复</button>
+          </template>
         </quo-forms>
       </div>
     </div>
     <button @click="submitForm" class="submitBtn">提交</button>
     <form-rows :rows="Object.keys(displayEntries).length"></form-rows>
-    <div class="infoDiv">I am test division</div>
+    <quo-form-info :selected-entry="selectedEntry"></quo-form-info>
   </div>
 </template>
 
 <script>
   import quoForms from '../quoForms';
-  import FormRows from '../FormRows'
+  import FormRows from '../FormRows';
+  import quoFormInfo from '../quoFormInfo';
   import {exportDisplayForm, getDisplayAttribute} from '../../../functions/functions'
 
   export default {
@@ -35,8 +40,11 @@
     },
     methods: {
       test(){
-        let test = {}
-        console.log(Object.keys(test).length)
+        console.log(this.selectedEntry)
+      },
+      respondQuo(quoId){
+        this.selectedEntry = quoId;
+        console.log(this.selectedEntry)
       },
       formValueChangedId(value){
         let quoId = value[0];
@@ -56,7 +64,7 @@
           .then(response => response.json())
           .then(data => {
             if (data){
-              alert(data['status'], data['message'])
+              alert(data['status'], data['message']);
               this.toHomepage()
             }
           })
@@ -72,7 +80,7 @@
         this.exportWholeForm(data);
         this.exportquoId(data);
         tmp = exportDisplayForm(data['body'], this.$store.getters.displayAttributes);
-        for (let i = 0; i<tmp.length; i++){
+        for (let i = 0; i < tmp.length; i++){
           result[this.wholeForms[i]['quoId']] = tmp[i]
         }
         return tmp
@@ -85,6 +93,7 @@
       exportquoId(data){
         for(let item of data['body']){
           this.changedValues[item['quoId']] = {}
+          this.quoIdIndex.push(item['quoId'])
         }
       },
       formDict(item){
@@ -108,12 +117,15 @@
       return {
         confirmedForm: [],
         wholeForms: [],
-        changedValues: {}
+        quoIdIndex: [],
+        changedValues: {},
+        selectedEntry: ""
       }
     },
     components:{
       quoForms,
-      FormRows
+      FormRows,
+      quoFormInfo
     }
   }
 </script>
