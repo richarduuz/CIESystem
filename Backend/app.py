@@ -7,7 +7,7 @@ from Backend.CouchDB import reset_password as reset_PSW
 from Backend.CouchDB import reset_other_password as reset_OPSW
 from Backend.CouchDB import delete_account as delete_a
 from Backend.CouchDB import create_new_quo as create_quo
-from Backend.CouchDB import getUncompletedForms, confirm_quo_price, getPendingForms
+from Backend.CouchDB import getUncompletedForms, confirm_quo_price, getPendingForms, confirm_rfq_price
 import json
 import pandas
 import Backend.util as util
@@ -187,6 +187,21 @@ def confirmQuoPrice():
             return jsonify({'status':'Okay', 'message': "已录入数据库"})
         else:
             return jsonify({'status': 'Error','message': result['message']})
+    except Exception as e:
+        bad_request(str(e))
+
+@app.route('/confirmRFQ', methods=["POST"])
+def confirmRFQ():
+    try:
+        rawData = request.data.decode('utf-8')
+        data = json.loads(rawData)
+        quoDb = handler.Server['quotation']
+        rfqDb = handler.Server['request_for_quotation']
+        result = confirm_rfq_price(quoDb, rfqDb, data)
+        if result['status'] == "Okay":
+            return jsonify({'status': 'Okay', 'message': "已录入数据库"})
+        else:
+            return jsonify({'status': 'Error', 'message': result['message']})
     except Exception as e:
         bad_request(str(e))
 

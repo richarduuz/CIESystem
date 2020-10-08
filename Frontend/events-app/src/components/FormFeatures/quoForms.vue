@@ -1,5 +1,6 @@
 <template>
   <div class="FormDiv">
+    <button @click="test">TEST</button>
       <table class="Form">
         <thead>
           <tr class="attributes">
@@ -27,7 +28,7 @@
               </div>
             </td>
             <td>
-              <slot :data="{index: index, quoId: quoIdIndex[index]}">
+              <slot :data="{index: index, quoId: quoIdIndex.length > index? quoIdIndex[index] : undefined}">
               </slot>
             </td>
           </tr>
@@ -41,8 +42,24 @@
 
   export default {
     name: "quoForms",
-    props:['displayEntries', 'quoIdIndex'],
+    props: {
+      displayEntries: {
+        type: Array,
+        default(){
+          return []
+        }
+      },
+      quoIdIndex: {
+        type: Array,
+        default() {
+          return []
+        }
+      }
+    },
     methods: {
+      test(){
+        console.log(this.displayEntries)
+      },
       formInputClassActive(item){
         return this.$store.state.systemAttributes.includes(item) || this.$store.getters.uneditableAttributes.includes(item)
       },

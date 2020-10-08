@@ -1,5 +1,5 @@
 <template>
-  <div class="quoFormInfo">
+  <div class="quoFormInfo" v-show="selectedEntry.length > 0">
     I am from info
     <button @click="test"></button>
     <div>
@@ -16,9 +16,16 @@
           </div>
           <br>
         </div>
+        <div class="bestResponse">
+          <div>选择一个报价作为最优报价</div>
+          <select  v-model="bestIndex">
+            <option v-for="(value, index) in RFQResponse" :key="index" :value="index">{{'第' + (index + 1) + '个'}}</option>
+          </select>
+        </div>
       </div>
       <div>
         <button @click="addRFQResponseEntry">增加报价</button>
+        <button @click="submitRFQResponse" :disabled="RFQResponse.length === 0">提交报价</button>
       </div>
     </div>
   </div>
@@ -29,7 +36,8 @@
     name: "quoFormInfo",
     props: {
       selectedEntry: {
-        type: String
+        type: String,
+        default: ""
       }
     },
     watch: {
@@ -41,20 +49,54 @@
     },
     methods: {
       test() {
-        console.log(this.selectedEntry)
+        console.log(this.bestIndex)
       },
       addRFQResponseEntry() {
-        this.RFQResponse.push(this.$store.state.RFQTemplate)
+        this.RFQResponse.push(Object.assign({}, this.$store.state.RFQTemplate))
       },
       removeRFQResponseEntry(index) {
         this.RFQResponse.splice(index, 1)
+      },
+      submitRFQResponse(){
+        let url = this.$store.state.url + "/confirmRFQ";
+        let postData = {"userId": this.$store.state.userId, "username": this.$store.state.username,
+            "userTitle": this.$store.state.userTitle,};
+        this.setBestResponse();
+        postData['quoId'] = this.selectedEntry;
+        postData['body'] = this.RFQResponse;
+        postData = JSON.stringify(postData);
+        this.$http.post(url, postData, {emulateJSON: true})
+          .then(res => res.json())
+          .then(data => {
+            if (data['status'] === 'Okay'){
+              alert(data['message']);
+              this.selectedEntry = "";
+              this.RFQResponse = []
+            }
+          })
+          .catch(() => alert("error"));
+        console.log(postData)
+      },
+
+
+
+      //-------Inner methods------
+      setBestResponse(){
+        for(let i = 0; i < this.RFQResponse.length; i++){
+          if (i !== this.bestIndex){
+            this.RFQResponse[i]['最优报价？'] = false
+          } else {
+            this.RFQResponse[i]['最优报价？'] = true
+          }
+        }
       }
     },
     data() {
       return {
-        RFQResponse: [this.$store.state.RFQTemplate]
+        RFQResponse: [],
+        bestIndex: -1
       }
-    },
+    }
   }
 </script>
 
@@ -74,11 +116,18 @@
 
   .subQuoFormInfo{
     background-color: #f1f1f1;
+    position: relative;
   }
 
   .removeBtn{
-    position: relative;
-    top: 85px;
-    right: -200px;
+    position: absolute;
+    top: 45%;
+    left: 75%;
+  }
+
+  .bestResponse{
+    position: absolute;
+    top: 50%;
+    left: 15%;
   }
 </style>

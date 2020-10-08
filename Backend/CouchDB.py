@@ -132,6 +132,20 @@ def confirm_quo_price(db, quo):
     finally:
         return result
 
+def confirm_rfq_price(quoDb, rfqDb, payload):
+    result = {'status': "Okay"}
+    try:
+        quoId = payload['quoId']
+        body = payload['body']
+        timestamp = datetime.now().strftime('%Y.%m.%d %H:%M')
+        tmpRFQ = {'采购': payload['username'], "回复日期": timestamp, "回复内容": body, 'quoId': quoId, 'userId': payload['userId']}
+        rfqDb.save(tmpRFQ)
+    except Exception as e:
+        result['status'] = "Error"
+        result['message'] = str(e)
+    finally:
+        return result
+
 
 
 

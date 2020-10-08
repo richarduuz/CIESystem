@@ -1,7 +1,7 @@
 <template>
   <div>
     <h2>This is uncompleted forms</h2>
-    <button @click="test()"></button>
+    <button @click="test()">TEST</button>
     <div>
       <h2 v-if="Object.keys(displayEntries).length === 0">目前没有请求的报价单</h2>
       <div v-else>
@@ -40,7 +40,7 @@
     },
     methods: {
       test(){
-        console.log(this.selectedEntry)
+        console.log(this.displayEntries)
       },
       respondQuo(quoId){
         this.selectedEntry = quoId;

@@ -40,8 +40,6 @@ def extractQuo(df):
 
 
 
-
-
 #------------------Self Functions------------------
 def getSize(df):
     return (df.shape[0], df.shape[1])
