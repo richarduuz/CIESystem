@@ -15,7 +15,7 @@
     </div>
     <button @click="submitForm" class="submitBtn">提交</button>
     <form-rows :rows="Object.keys(displayEntries).length"></form-rows>
-    <quo-form-info :selected-entry="selectedEntry"></quo-form-info>
+    <quo-form-info :selected-entry="selectedEntry" @selectedEntryClear="selectedEntryClear"></quo-form-info>
   </div>
 </template>
 
@@ -36,11 +36,21 @@
             .then(data => this.processingData(data))
         },
         default: {}
+      },
+      displayRFQ: {
+        get() {
+          let url = this.$store.state.url + '/uncompletedRFQ/' + this.$store.state.userId;
+          return this.$http.get(url)
+            .then(response => response.json())
+            .then(data => this.processingRFQ(data))
+        },
+        default: {}
       }
     },
     methods: {
       test(){
-        console.log(this.displayEntries)
+        console.log(this.displayRFQ);
+        console.log(this.displayEntries);
       },
       respondQuo(quoId){
         this.selectedEntry = quoId;
@@ -71,9 +81,16 @@
           .catch(()=> alert("error"))
         }
       },
-
+      selectedEntryClear(value){
+        this.selectedEntry = value;
+        //TODO update the two properties in AsyncComputed!!!
+      },
 
       //---------------Internal Functions---------------//
+      processingRFQ(data){
+        return data['body']
+      },
+
       processingData(data) {
         let tmp = [];
         let result = {};
@@ -92,7 +109,7 @@
       },
       exportquoId(data){
         for(let item of data['body']){
-          this.changedValues[item['quoId']] = {}
+          this.changedValues[item['quoId']] = {};
           this.quoIdIndex.push(item['quoId'])
         }
       },

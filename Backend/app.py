@@ -7,7 +7,7 @@ from Backend.CouchDB import reset_password as reset_PSW
 from Backend.CouchDB import reset_other_password as reset_OPSW
 from Backend.CouchDB import delete_account as delete_a
 from Backend.CouchDB import create_new_quo as create_quo
-from Backend.CouchDB import getUncompletedForms, confirm_quo_price, getPendingForms, confirm_rfq_price
+from Backend.CouchDB import getUncompletedForms, getUncompletedRFQ, confirm_quo_price, getPendingForms, confirm_rfq_price
 import json
 import pandas
 import Backend.util as util
@@ -25,11 +25,15 @@ handler = ha(url, username, password)
 
 @app.errorhandler(400)
 def bad_request(error):
-    abort(400, error)
+    return str(error), 400
 
 @app.errorhandler(404)
 def not_found(error):
-    abort(404, error)
+    return str(error), 404
+
+@app.errorhandler(500)
+def internal_error(error):
+    return str(error), 500
 
 @app.route('/login', methods=["POST"])
 def auth_user():
@@ -165,6 +169,16 @@ def uncompletedForms():
     except Exception as e:
         bad_request(str(e))
 
+@app.route('/uncompletedRFQ/<userId>', methods=['GET'])
+def uncompleteRFQ(userId):
+    try:
+        rfqDB = handler.Server['request_for_quotation']
+        result = getUncompletedRFQ(rfqDB, userId)
+        result = {'status': 'Okay', 'body': result}
+        return jsonify(result)
+    except Exception as e:
+        internal_error(str(e))
+
 @app.route('/pendingForms', methods=['GET'])
 def pendingforms():
     try:
@@ -204,10 +218,6 @@ def confirmRFQ():
             return jsonify({'status': 'Error', 'message': result['message']})
     except Exception as e:
         bad_request(str(e))
-
-
-
-
 
 if __name__ == '__main__':
     app.run(host=host ,port=port)

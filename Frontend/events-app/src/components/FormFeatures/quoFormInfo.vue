@@ -10,7 +10,7 @@
         </div>
         <div class="subQuoFormInfo" v-for="(item, index) in RFQResponse" :key="index">
           <button v-show="index !== 0" class="removeBtn" @click="removeRFQResponseEntry(index)">删除</button>
-          <div v-for="(value, key) in item" :key="key">
+          <div v-for="(value, key) in item" :key="key" v-show="key !== '最优报价？'">
             {{key+ ': '}}
             <input v-model="RFQResponse[index][key]"></input>
           </div>
@@ -18,14 +18,14 @@
         </div>
         <div class="bestResponse">
           <div>选择一个报价作为最优报价</div>
-          <select  v-model="bestIndex">
+          <select  v-model="bestIndex" required style="width: 60px">
             <option v-for="(value, index) in RFQResponse" :key="index" :value="index">{{'第' + (index + 1) + '个'}}</option>
           </select>
         </div>
       </div>
       <div>
         <button @click="addRFQResponseEntry">增加报价</button>
-        <button @click="submitRFQResponse" :disabled="RFQResponse.length === 0">提交报价</button>
+        <button @click="submitRFQResponse" :disabled="RFQResponse.length === 0 || bestIndex === -1">提交报价</button>
       </div>
     </div>
   </div>
@@ -38,18 +38,33 @@
       selectedEntry: {
         type: String,
         default: ""
-      }
+      },
     },
     watch: {
       selectedEntry: function(val) {
-        if (val !== undefined){
-          this.selectedEntry = val;
+        this.RFQResponse = [];
+        this.bestIndex = -1;
+        // if (val !== undefined){
+        //   this.selectedEntry = val;
+        // }
+        for (let i of this.$parent.displayRFQ){
+          if (i['quoId'] === val){
+            let tmp = i['回复内容'];
+            for (let j =0; j< tmp.length; j++){
+              this.RFQResponse.push(tmp[j]);
+              if (tmp[j]['最优报价？'] === true){
+                this.bestIndex = j
+              }
+            }
+          }
         }
       }
     },
     methods: {
+      update(){},
+
       test() {
-        console.log(this.bestIndex)
+        console.log(this.RFQResponse)
       },
       addRFQResponseEntry() {
         this.RFQResponse.push(Object.assign({}, this.$store.state.RFQTemplate))
@@ -70,15 +85,14 @@
           .then(data => {
             if (data['status'] === 'Okay'){
               alert(data['message']);
-              this.selectedEntry = "";
-              this.RFQResponse = []
+              // this.selectedEntry = "";
+              this.RFQResponse = [];
+              this.$emit("selectedEntryClear", this.selectedEntry);
             }
           })
           .catch(() => alert("error"));
         console.log(postData)
       },
-
-
 
       //-------Inner methods------
       setBestResponse(){
@@ -89,6 +103,12 @@
             this.RFQResponse[i]['最优报价？'] = true
           }
         }
+      },
+      goToCurrentPage(){
+         let path = '/homepage/' + this.$store.state.username + '/uncompleted_forms';
+                this.$router.push({
+                    path
+                })
       }
     },
     data() {
@@ -125,9 +145,12 @@
     left: 75%;
   }
 
-  .bestResponse{
+  .bestResponse {
     position: absolute;
     top: 50%;
     left: 15%;
   }
+
+
+
 </style>
