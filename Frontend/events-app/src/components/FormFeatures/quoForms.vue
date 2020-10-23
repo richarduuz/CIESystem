@@ -13,7 +13,10 @@
             <td v-for="(value, subIndex) in $store.getters.displayAttributes" :key="subIndex">
               <div v-if="$store.getters.displayAttributes[subIndex] === '紧急程度'">
                 <select v-model="displayEntries[index][subIndex]"
-                        @change="displayValueChanged([index, subIndex, $event.target.value])" required>
+                        :class="{FormInput: formInputClassActive($store.getters.displayAttributes[subIndex])}"
+                        @change="displayValueChanged([index, subIndex, $event.target.value])"
+                        :disabled="formInputClassActive($store.getters.displayAttributes[subIndex])"
+                        required>
                   <option value="紧急重要">紧急重要</option>
                   <option value="重要不紧急">重要不紧急</option>
                   <option value="紧急不重要">紧急不重要</option>

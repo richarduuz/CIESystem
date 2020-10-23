@@ -85,11 +85,13 @@ def create_new_quo(db, quo):
     entries = quo['body']
     username = quo['username']
     userTitle = quo['userTitle']
+    userId = quo['userId']
     for item in entries:
         item['询价日期'] = datetime.now().strftime('%Y.%m.%d %H:%M')
         if userTitle == 'Sales':
             item['销售'] = username
         item['目前状态'] = "等待采购回复"
+        item['userId'] = userId
         db.save(item)
     return {"result": "Okay"}
 
@@ -111,14 +113,18 @@ def getUncompletedRFQ(rfqDB, userId):
     return result
 
 
-def getPendingForms(db):
-    result = []
-    for doc in db:
-        tmp = dict(db[doc])
-        if tmp['目前状态'] == '采购已回复':
-            tmp['quoId'] = doc
-            result.append(tmp)
-    return result
+def getPendingForms(quoDB, rfqDB, userId):
+    quo_result = []
+    rfq_result = []
+    for doc in rfqDB:
+        tmp = dict(rfqDB[doc])
+        quo_tmp = dict(quoDB[tmp['quoId']])
+        if quo_tmp['userId'] == userId:
+            quo_tmp['quoId'] = tmp['quoId']
+            quo_result.append(quo_tmp)
+            rfq_result.append(tmp)
+
+    return quo_result, rfq_result
 
 def confirm_quo_price(db, quo):
     result = {"status": "Okay"}

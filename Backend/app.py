@@ -37,7 +37,6 @@ def internal_error(error):
 
 @app.route('/login', methods=["POST"])
 def auth_user():
-    print('in the login')
     rawData = request.data.decode('utf-8')
     try:
         data = json.loads(rawData)
@@ -50,7 +49,7 @@ def auth_user():
         else:
             return jsonify({'result': 'False'})
     except Exception as e:
-        return jsonify({'result':'error'})
+        internal_error(str(e))
 
 @app.route('/signup', methods=["POST"])
 def sign_up():
@@ -179,13 +178,14 @@ def uncompleteRFQ(userId):
     except Exception as e:
         internal_error(str(e))
 
-@app.route('/pendingForms', methods=['GET'])
-def pendingforms():
+@app.route('/pendingForms/<userId>', methods=['GET'])
+def pendingforms(userId):
     try:
         quoDB = handler.Server['quotation']
-        result = getPendingForms(quoDB)
-        result = {'status': 'Okay', 'body': result}
-        print(result)
+        rfqDB = handler.Server['request_for_quotation']
+        quo_result, rfq_result = getPendingForms(quoDB, rfqDB, userId)
+        print(rfq_result)
+        result = {'status': 'Okay', 'body': {"quo_result": quo_result, 'rfq_result': rfq_result}}
         return jsonify(result)
     except Exception as e:
         bad_request(str(e))

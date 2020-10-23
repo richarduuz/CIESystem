@@ -50,7 +50,8 @@ export default new Vuex.Store({
       if (state.userTitle === 'Sales'){
         return ["成本", "建议报价", "报价", "参考金额", "交期"]
       } else if (state.userTitle === 'Buyer'){
-        return ["接单率","客户要求时间","客户","品牌","型号","数量","TP","历史报价" ,"SPQ" ,"MOQ"]
+        return ["接单率","客户要求时间","客户","品牌","型号","数量","TP","历史报价" ,"SPQ" ,"MOQ", "紧急程度", "客户交期",
+          "采购交期", "单次数量", "官网价格$", "交期", "quoId"]
       }
     }
   }

@@ -35,8 +35,8 @@
                 var postData = {"username": this.username, "password": this.psw};
                 postData = JSON.stringify(postData);
                 this.$http.post(url, postData, {emulateJSON: true})
-                    .then(response=>response.json())
-                    .then(data=>{
+                    .then(response => response.json())
+                    .then(data => {
                         if (data){
                             var result = data['result'];
                             console.log(result);
@@ -56,6 +56,7 @@
                             }
                         }
                     })
+                        .catch(e => alert(e.status))
             },
             toHomepage(){
                 let path = '/homepage/' + this.$store.state.username;
