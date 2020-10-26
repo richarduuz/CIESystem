@@ -10,7 +10,18 @@
     props: {
       rows: {
         type: Number,
-        default: 0
+        default: 100
+      }
+    },
+    watch: {
+      rows: (newValue) => {
+        console.log("watch here");
+        this.rows = newValue;
+      }
+    },
+    methods: {
+      test() {
+        console.log(this.rows);
       }
     }
   }

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <button @click="test">TEST</button>
+    <button @click="test">Pending</button>
     <div v-if="Object.keys(displayEntries).length !== 0">
       <quo-forms :displayEntries="Object.values(displayEntries)" :quo-id-index="quoIdIndex">
         <th slot="isImportant">查看详情</th>
@@ -8,11 +8,11 @@
           <button @click="showRFQInfo(slot.data['quoId'])">查看</button>
         </template>
       </quo-forms>
-      <form-rows :row="Object.keys(displayEntries).length"></form-rows>
+      <form-rows :rows="Object.keys(displayEntries).length"></form-rows>
     </div>
     <h2 v-else>目前没有请求的报价单</h2>
     <div class="rfq">
-      <RFQInfo :r-f-q-response="rfqSpecificResponse"></RFQInfo>
+      <RFQInfo :r-f-q-response="rfqSpecificResponse" :r-f-q-best-response="rfqBestResponse"></RFQInfo>
     </div>
   </div>
 </template>
@@ -40,7 +40,7 @@
     },
     methods:{
       test(){
-        console.log(this.rfqWholeResponse);
+        console.log(Object.keys(this.displayEntries).length);
       },
       showRFQInfo(quoId){
         this.rfqSpecificResponse = [];
@@ -50,7 +50,15 @@
             this.rfqSpecificResponse.push(item['回复内容'])
           }
         }
-        console.log(this.rfqSpecificResponse)
+        for (let items of this.rfqSpecificResponse){
+          for (let item of items){
+            if(item['最优报价？'] === true){
+              item['采购'] = items['采购']
+              this.rfqBestResponse.push(item)
+              break
+            }
+          }
+        }
       },
       processingData(data){
         this.displayEntries = {};
@@ -82,7 +90,8 @@
         wholeForms: [],
         quoIdIndex: [],
         rfqWholeResponse: [],
-        rfqSpecificResponse: []
+        rfqSpecificResponse: [],
+        rfqBestResponse: []
       }
     },
     components: {

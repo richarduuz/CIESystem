@@ -2,13 +2,12 @@
   <div>
     <button @click="test">RFQCard</button>
     <div class="card">
-      <div v-for="(value, key) in rfq" v-show="key !== '最优报价？'" :key="key">
+      <div v-for="(value, key) in rfqBest" v-show="key !== '最优报价？'" :key="key">
         <label>{{key}}: </label>
         <span>{{value}}</span>
       </div>
-      <label>采购: </label>
-      <span>{{buyer}}</span>
     </div>
+    <button @click="$emit('showModal', rfqAll)">查看所有报价</button>
   </div>
 </template>
 
@@ -17,17 +16,17 @@
     name: "RFQCard",
     methods: {
       test(){
-        console.log(this.buyer);
+        console.log(this.rfqAll);
       }
     },
     props: {
-      rfq: {
+      rfqBest: {
         type: Object,
         default(){return {}}
       },
-      buyer: {
-        type: String,
-        default: ""
+      rfqAll: {
+        type: Array,
+        default(){return {}}
       }
     }
   }
@@ -40,7 +39,7 @@
   .card {
   box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
   transition: 0.3s;
-  width: 40%;
+  width: 200px;
 }
 
 .card:hover {
