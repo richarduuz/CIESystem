@@ -1,4 +1,4 @@
-from flask import Flask, request, make_response, jsonify, abort
+from flask import Flask, request, make_response, jsonify, abort, request
 from Backend.CouchDB import CouchDBHandler as ha
 from Backend.CouchDB import auth_user as auth
 from Backend.CouchDB import create_account as create
@@ -178,17 +178,25 @@ def uncompleteRFQ(userId):
     except Exception as e:
         internal_error(str(e))
 
-@app.route('/pendingForms/<userId>', methods=['GET'])
-def pendingforms(userId):
-    try:
-        quoDB = handler.Server['quotation']
-        rfqDB = handler.Server['request_for_quotation']
-        quo_result, rfq_result = getPendingForms(quoDB, rfqDB, userId)
-        print(rfq_result)
-        result = {'status': 'Okay', 'body': {"quo_result": quo_result, 'rfq_result': rfq_result}}
-        return jsonify(result)
-    except Exception as e:
-        bad_request(str(e))
+@app.route('/pendingForms/<userId>/<quoId>', methods=['GET', 'PUT'])
+def pendingforms(userId, quoId):
+    if request.method == 'GET':
+        try:
+            quoDB = handler.Server['quotation']
+            rfqDB = handler.Server['request_for_quotation']
+            quo_result, rfq_result = getPendingForms(quoDB, rfqDB, userId)
+            print(rfq_result)
+            result = {'status': 'Okay', 'body': {"quo_result": quo_result, 'rfq_result': rfq_result}}
+            return jsonify(result)
+        except Exception as e:
+            bad_request(str(e))
+    elif request.method == 'PUT':
+        try:
+            quoDB = handler.Server['quotation']
+            return jsonify("Okay")
+        except Exception as e:
+            bad_request(str(e))
+
 
 @app.route('/confirmQuotationPrice', methods=['POST'])
 def confirmQuoPrice():

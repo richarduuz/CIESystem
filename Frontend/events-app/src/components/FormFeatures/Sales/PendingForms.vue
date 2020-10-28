@@ -3,9 +3,16 @@
     <button @click="test">Pending</button>
     <div v-if="Object.keys(displayEntries).length !== 0">
       <quo-forms :displayEntries="Object.values(displayEntries)" :quo-id-index="quoIdIndex">
-        <th slot="isImportant">查看详情</th>
+        <th slot="isImportant">
+          <div class="checkInfo">
+            查看详情
+          </div>
+        </th>
         <template slot-scope="slot">
-          <button @click="showRFQInfo(slot.data['quoId'])">查看</button>
+          <div>
+            <button @click="showRFQInfo(slot.data['quoId'])">查看</button>
+            <button @click="closeQuo(slot.data['quoId'])">关闭</button>
+          </div>
         </template>
       </quo-forms>
       <form-rows :rows="Object.keys(displayEntries).length"></form-rows>
@@ -29,7 +36,7 @@
     asyncComputed: {
       displayEntries: {
         get(){
-          let url = this.$store.state.url + '/pendingForms/' + this.$store.state.userId;
+          let url = this.$store.state.url + '/pendingForms/' + this.$store.state.userId + '/test';
           return this.$http.get(url)
             .then(response => response.json())
             .then(data => this.processingData(data))
@@ -44,6 +51,7 @@
       },
       showRFQInfo(quoId){
         this.rfqSpecificResponse = [];
+        this.rfqBestResponse = [];
         for (let item of this.rfqWholeResponse){
           if(item['quoId'] === quoId){
             item['回复内容']['采购'] = item['采购'];
@@ -58,6 +66,18 @@
               break
             }
           }
+        }
+      },
+      closeQuo(quoId){
+        if (confirm("确定要关闭这条记录吗？")){
+          let url = this.$store.state.url + '/pendingForms/' + this.$store.state.userId +'/' + quoId;
+          this.$http.put(url)
+            .then(response => response.json())
+            .then(data => {
+              if (data){
+                alert(data)
+              }
+            })
         }
       },
       processingData(data){
@@ -111,5 +131,11 @@
     height: 250px;
     border: 1px solid blue;
     overflow-y: auto;
+  }
+  button.btn-left{
+    float: left;
+  }
+  div.checkInfo{
+    width: 155px;
   }
 </style>

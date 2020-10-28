@@ -46,7 +46,7 @@
         for(let item of rfqAll){
           this.Info2Modal.push(item)
         }
-        this.$modal.show('test-modal', )
+        this.$modal.show('test-modal')
       }
     },
     data() {
