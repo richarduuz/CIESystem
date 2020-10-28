@@ -1,30 +1,36 @@
 <template>
   <div>
-    I am from create form
-    <button @click="test">test</button>
-    <br>
-    <quo-forms :display-entries="displayEntries" @formValueChanged="formValueChanged">
-      <th slot="isImportant">是否视为重要项目</th>
-      <template slot-scope="slot">
-        <select v-model="isImportant[slot.data]" required>
-          <option value="No">No</option>
-          <option value="Yes">Yes</option>
-        </select>
-      </template>
-    </quo-forms>
-    <div>
-      <input type="file" ref="file" id="file" @change="handleFileUpload">
-      <button :disabled="file === undefined" @click="submitForm">Submit</button>
-      <button @click="confirmForm">Confirm</button>
-      <button @click="createNewEntry">Create New Entry</button>
+    <button @click="test"></button>
+    <div v-if="displayEntries.length === 0">
+      <h2>请添加表格</h2>
     </div>
+    <div v-else>
+      I am from create form
+      <br>
+      <quo-forms :display-entries="displayEntries" @formValueChanged="formValueChanged">
+        <th slot="isImportant">是否视为重要项目</th>
+        <template slot-scope="slot">
+          <select v-model="isImportant[slot.data['index']]" required>
+            <option value="No">No</option>
+            <option value="Yes">Yes</option>
+          </select>
+        </template>
+      </quo-forms>
+    </div>
+    <div class="BtnDiv">
+        <input type="file" ref="file" id="file" @change="handleFileUpload">
+        <button :disabled="file === undefined" @click="submitForm">Submit</button>
+        <button @click="confirmForm">Confirm</button>
+        <button @click="createNewEntry">Create New Entry</button>
+    </div>
+    <form-rows :rows="displayEntries.length"></form-rows>
   </div>
-
 </template>
 
 <script>
-  import quoForms from '../FormFeatures/quoForms';
-  import {exportDisplayForm} from '../../functions/functions'
+  import quoForms from '../quoForms';
+  import FormRows from '../FormRows'
+  import {exportDisplayForm} from '../../../functions/functions'
 
   export default {
     name: "CreateForm",
@@ -38,7 +44,7 @@
     },
     methods: {
       test() {
-        console.log(this.isImportant)
+        console.log(this.displayEntries)
       },
 
       submitForm() {
@@ -135,7 +141,8 @@
             }
     },
     components: {
-      quoForms
+      quoForms,
+      FormRows
     }
 
   }
@@ -155,6 +162,12 @@
   .FormInput {
     max-width: 100%;
     white-space: nowrap;
+  }
+
+  div.BtnDiv{
+    position: absolute;
+    top: 460px;
+    right: 25%;
   }
 
 </style>

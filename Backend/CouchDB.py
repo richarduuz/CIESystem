@@ -1,5 +1,6 @@
 import couchdb
 from datetime import datetime
+import hashlib
 
 class CouchDBHandler:
     Username = ""
@@ -84,22 +85,46 @@ def create_new_quo(db, quo):
     entries = quo['body']
     username = quo['username']
     userTitle = quo['userTitle']
+    userId = quo['userId']
     for item in entries:
         item['询价日期'] = datetime.now().strftime('%Y.%m.%d %H:%M')
         if userTitle == 'Sales':
             item['销售'] = username
         item['目前状态'] = "等待采购回复"
+        item['userId'] = userId
         db.save(item)
     return {"result": "Okay"}
 
-def getUncompletedForms(db):
+def getUncompletedForms(quoDB):
     result = []
-    for doc in db:
-        tmp = dict(db[doc])
+    for doc in quoDB:
+        tmp = dict(quoDB[doc])
         if tmp['目前状态'] == '等待采购回复':
             tmp['quoId'] = doc
             result.append(tmp)
     return result
+
+def getUncompletedRFQ(rfqDB, userId):
+    result = []
+    for doc in rfqDB:
+        tmp = dict(rfqDB[doc])
+        if tmp['userId'] == userId:
+            result.append(tmp)
+    return result
+
+
+def getPendingForms(quoDB, rfqDB, userId):
+    quo_result = []
+    rfq_result = []
+    for doc in rfqDB:
+        tmp = dict(rfqDB[doc])
+        quo_tmp = dict(quoDB[tmp['quoId']])
+        if quo_tmp['userId'] == userId:
+            quo_tmp['quoId'] = tmp['quoId']
+            quo_result.append(quo_tmp)
+            rfq_result.append(tmp)
+
+    return quo_result, rfq_result
 
 def confirm_quo_price(db, quo):
     result = {"status": "Okay"}
@@ -122,6 +147,34 @@ def confirm_quo_price(db, quo):
         result['message'] = str(e)
     finally:
         return result
+
+def confirm_rfq_price(quoDb, rfqDb, payload):
+    try:
+        result = {'status': "Okay"}
+        for doc in rfqDb:
+            tmp = dict(rfqDb[doc])
+            hashkey = hashlib.sha256((tmp['quoId'] + tmp['userId']).encode('utf-8')).hexdigest()
+            hashkey_ = hashlib.sha256((payload['quoId'] + payload['userId']).encode('utf-8')).hexdigest()
+            if hashkey == hashkey_:
+                body = payload['body']
+                timestamp = datetime.now().strftime('%Y.%m.%d %H:%M')
+                tmp["回复日期"] = timestamp
+                tmp["回复内容"] = body
+                rfqDb.save(tmp)
+                return result
+            break
+        quoId = payload['quoId']
+        body = payload['body']
+        timestamp = datetime.now().strftime('%Y.%m.%d %H:%M')
+        tmpRFQ = {'采购': payload['username'], "回复日期": timestamp, "回复内容": body, 'quoId': quoId, 'userId': payload['userId']}
+        rfqDb.save(tmpRFQ)
+        return result
+    except Exception as e:
+        result['status'] = "error"
+        result['message'] = str(e)
+        return result
+
+
 
 
 

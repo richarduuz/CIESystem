@@ -1,4 +1,4 @@
-from flask import Flask, request, make_response, jsonify, abort
+from flask import Flask, request, make_response, jsonify, abort, request
 from Backend.CouchDB import CouchDBHandler as ha
 from Backend.CouchDB import auth_user as auth
 from Backend.CouchDB import create_account as create
@@ -7,8 +7,7 @@ from Backend.CouchDB import reset_password as reset_PSW
 from Backend.CouchDB import reset_other_password as reset_OPSW
 from Backend.CouchDB import delete_account as delete_a
 from Backend.CouchDB import create_new_quo as create_quo
-from Backend.CouchDB import getUncompletedForms
-from Backend.CouchDB import confirm_quo_price
+from Backend.CouchDB import getUncompletedForms, getUncompletedRFQ, confirm_quo_price, getPendingForms, confirm_rfq_price
 import json
 import pandas
 import Backend.util as util
@@ -26,15 +25,18 @@ handler = ha(url, username, password)
 
 @app.errorhandler(400)
 def bad_request(error):
-    abort(400, error)
+    return str(error), 400
 
 @app.errorhandler(404)
 def not_found(error):
-    abort(404, error)
+    return str(error), 404
+
+@app.errorhandler(500)
+def internal_error(error):
+    return str(error), 500
 
 @app.route('/login', methods=["POST"])
 def auth_user():
-    print('in the login')
     rawData = request.data.decode('utf-8')
     try:
         data = json.loads(rawData)
@@ -47,7 +49,7 @@ def auth_user():
         else:
             return jsonify({'result': 'False'})
     except Exception as e:
-        return jsonify({'result':'error'})
+        internal_error(str(e))
 
 @app.route('/signup', methods=["POST"])
 def sign_up():
@@ -166,6 +168,36 @@ def uncompletedForms():
     except Exception as e:
         bad_request(str(e))
 
+@app.route('/uncompletedRFQ/<userId>', methods=['GET'])
+def uncompleteRFQ(userId):
+    try:
+        rfqDB = handler.Server['request_for_quotation']
+        result = getUncompletedRFQ(rfqDB, userId)
+        result = {'status': 'Okay', 'body': result}
+        return jsonify(result)
+    except Exception as e:
+        internal_error(str(e))
+
+@app.route('/pendingForms/<userId>/<quoId>', methods=['GET', 'PUT'])
+def pendingforms(userId, quoId):
+    if request.method == 'GET':
+        try:
+            quoDB = handler.Server['quotation']
+            rfqDB = handler.Server['request_for_quotation']
+            quo_result, rfq_result = getPendingForms(quoDB, rfqDB, userId)
+            print(rfq_result)
+            result = {'status': 'Okay', 'body': {"quo_result": quo_result, 'rfq_result': rfq_result}}
+            return jsonify(result)
+        except Exception as e:
+            bad_request(str(e))
+    elif request.method == 'PUT':
+        try:
+            quoDB = handler.Server['quotation']
+            return jsonify("Okay")
+        except Exception as e:
+            bad_request(str(e))
+
+
 @app.route('/confirmQuotationPrice', methods=['POST'])
 def confirmQuoPrice():
     try:
@@ -180,9 +212,20 @@ def confirmQuoPrice():
     except Exception as e:
         bad_request(str(e))
 
-
-
-
+@app.route('/confirmRFQ', methods=["POST"])
+def confirmRFQ():
+    try:
+        rawData = request.data.decode('utf-8')
+        data = json.loads(rawData)
+        quoDb = handler.Server['quotation']
+        rfqDb = handler.Server['request_for_quotation']
+        result = confirm_rfq_price(quoDb, rfqDb, data)
+        if result['status'] == "Okay":
+            return jsonify({'status': 'Okay', 'message': "已录入数据库"})
+        else:
+            return jsonify({'status': 'Error', 'message': result['message']})
+    except Exception as e:
+        bad_request(str(e))
 
 if __name__ == '__main__':
     app.run(host=host ,port=port)
